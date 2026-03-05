@@ -77,11 +77,33 @@ window.openRegisterModal = async function(type) {
 
                 <!-- Insufficient warning -->
                 ${!canAfford && !alreadyPaid ? `
-                <div style="background:rgba(255,77,77,0.06); border:1px solid rgba(255,77,77,0.2); border-radius:10px; padding:12px; margin-bottom:16px;">
-                    <p style="font-family:'Share Tech Mono',monospace; font-size:0.65rem; color:#ff6b6b; letter-spacing:0.5px; line-height:1.6;">
-                        Coin မလုံလောက်ပါ။<br>Admin ထံ ဆက်သွယ်ပြီး Coin တင်ပေးပါ။<br>
+                <div style="background:rgba(255,77,77,0.06); border:1px solid rgba(255,77,77,0.2); border-radius:10px; padding:14px; margin-bottom:16px;">
+                    <p style="font-family:'Share Tech Mono',monospace; font-size:0.65rem; color:#ff6b6b; letter-spacing:0.5px; line-height:1.8; margin-bottom:12px;">
+                        Coin မလုံလောက်ပါ။ Admin ထံ ဆက်သွယ်ပြီး Coin ဝယ်ပါ။<br>
                         <span style="color:var(--dim);">လိုအပ်သည်: ${cfg.coins} 🪙 · ${cfg.mmk.toLocaleString()} ကျပ်</span>
                     </p>
+                    <div style="display:flex; gap:8px;">
+                        <a href="${window.TW_CONTACTS?.facebook || '#'}" target="_blank" style="
+                            flex:1; display:flex; align-items:center; justify-content:center; gap:7px;
+                            background:#1877f2; border-radius:10px; padding:10px 8px;
+                            text-decoration:none; font-family:'Rajdhani',sans-serif;
+                            font-weight:700; font-size:0.85rem; color:#fff; letter-spacing:0.5px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.477 2 2 6.145 2 11.243c0 2.937 1.453 5.56 3.727 7.28V22l3.405-1.869c.909.252 1.871.388 2.868.388 5.523 0 10-4.144 10-9.276S17.523 2 12 2zm1.008 12.5l-2.546-2.713-4.97 2.713 5.467-5.804 2.61 2.713 4.906-2.713-5.467 5.804z"/>
+                            </svg>
+                            Messenger
+                        </a>
+                        <a href="${window.TW_CONTACTS?.telegram || '#'}" target="_blank" style="
+                            flex:1; display:flex; align-items:center; justify-content:center; gap:7px;
+                            background:#229ED9; border-radius:10px; padding:10px 8px;
+                            text-decoration:none; font-family:'Rajdhani',sans-serif;
+                            font-weight:700; font-size:0.85rem; color:#fff; letter-spacing:0.5px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.68 7.92c-.13.58-.47.72-.95.45l-2.62-1.93-1.27 1.22c-.14.14-.26.26-.53.26l.19-2.68 4.88-4.41c.21-.19-.05-.29-.33-.1L7.9 14.06l-2.56-.8c-.56-.17-.57-.56.12-.83l10.01-3.86c.46-.17.87.11.71.83z"/>
+                            </svg>
+                            Telegram
+                        </a>
+                    </div>
                 </div>` : ''}
 
                 <!-- Buttons -->
@@ -132,15 +154,30 @@ window.confirmRegister = async function(type) {
                 [cfg.field]:  true,
             });
 
-            // Transaction log
+            // Transaction log (coin history)
             tx.set(db.collection("tw_transactions").doc(), {
                 uid:          user.uid,
                 manager_name: data.manager_name || '',
+                team_name:    data.team_name    || '',
                 type:         type,
                 label:        cfg.label,
                 coins:        cfg.coins,
                 mmk:          cfg.mmk,
                 created_at:   firebase.firestore.FieldValue.serverTimestamp(),
+            });
+
+            // Registration log — Admin မြင်ရန် + Members list ပြရန်
+            tx.set(db.collection("tw_registrations").doc(`${type}_${user.uid}`), {
+                uid:          user.uid,
+                manager_name: data.manager_name || '',
+                team_name:    data.team_name    || '',
+                facebook:     data.facebook_name || '',
+                type:         type,           // "weekly" / "cup"
+                label:        cfg.label,
+                coins:        cfg.coins,
+                mmk:          cfg.mmk,
+                status:       "confirmed",
+                registered_at: firebase.firestore.FieldValue.serverTimestamp(),
             });
         });
 

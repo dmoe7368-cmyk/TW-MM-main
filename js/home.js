@@ -21,13 +21,15 @@ window.renderHome = async function() {
         <div style="max-width:600px; margin:0 auto; padding:14px 14px 30px;">
 
             ${user ? buildFeeStatus(userData) : buildLoginPrompt()}
-            ${buildNewsSection()}
+            ${buildMembersSection()}
+        ${buildNewsSection()}
 
         </div>
         <div id="reg-modal-holder"></div>
     `;
 
     loadNews();
+    loadMembers();
 
     // Real-time coin & fee update
     if (user) {
@@ -119,6 +121,163 @@ function buildLoginPrompt() {
             <button onclick="window.renderAuthUI()" class="primary-btn" style="max-width:200px; margin:0 auto;">LOGIN</button>
         </div>
     `;
+}
+
+// ── Members Registration List ─────────────────────────────────────────────────
+function buildMembersSection() {
+    return `
+        <div class="section-title" style="margin-top:8px;">👥 Registered Members</div>
+
+        <!-- Tab toggle -->
+        <div style="display:flex; background:#000; padding:4px; border-radius:40px; margin-bottom:14px; border:1px solid var(--border);">
+            <button id="mem-tab-weekly" onclick="switchMemberTab('weekly')"
+                style="flex:1; padding:9px; border-radius:40px; border:none;
+                       background:var(--green); color:#000;
+                       font-family:'Rajdhani',sans-serif; font-weight:700;
+                       font-size:0.8rem; cursor:pointer; letter-spacing:1px; transition:0.2s;">
+                📅 WEEKLY
+            </button>
+            <button id="mem-tab-cup" onclick="switchMemberTab('cup')"
+                style="flex:1; padding:9px; border-radius:40px; border:none;
+                       background:transparent; color:var(--dim);
+                       font-family:'Rajdhani',sans-serif; font-weight:700;
+                       font-size:0.8rem; cursor:pointer; letter-spacing:1px; transition:0.2s;">
+                🏆 CUP
+            </button>
+        </div>
+
+        <div id="members-list">
+            <div class="loading"><div class="spinner"></div></div>
+        </div>
+    `;
+}
+
+window._memberTab = 'weekly';
+
+window.switchMemberTab = function(type) {
+    window._memberTab = type;
+    const isWeekly = type === 'weekly';
+
+    const tw = document.getElementById('mem-tab-weekly');
+    const tc = document.getElementById('mem-tab-cup');
+    if (tw) {
+        tw.style.background = isWeekly ? 'var(--green)' : 'transparent';
+        tw.style.color      = isWeekly ? '#000' : 'var(--dim)';
+    }
+    if (tc) {
+        tc.style.background = !isWeekly ? 'var(--gold)' : 'transparent';
+        tc.style.color      = !isWeekly ? '#000' : 'var(--dim)';
+    }
+    loadMembers(type);
+};
+
+function loadMembers(type) {
+    const t = type || window._memberTab || 'weekly';
+    const list = document.getElementById('members-list');
+    if (!list) return;
+
+    list.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
+
+    db.collection("tw_registrations")
+        .where("type", "==", t)
+        .orderBy("registered_at", "desc")
+        .onSnapshot(snap => {
+            const el = document.getElementById('members-list');
+            if (!el) return;
+
+            if (snap.empty) {
+                el.innerHTML = `
+                    <div class="glow-card" style="text-align:center; padding:24px; color:var(--dim);">
+                        <p style="font-family:'Share Tech Mono',monospace; font-size:0.7rem; letter-spacing:1px;">
+                            ${t === 'weekly' ? 'Weekly' : 'Cup'} Register မရှိသေးပါ
+                        </p>
+                    </div>`;
+                return;
+            }
+
+            const isWeekly = t === 'weekly';
+            const color    = isWeekly ? 'var(--green)' : 'var(--gold)';
+            const total    = snap.docs.length;
+
+            el.innerHTML = `
+                <!-- Count badge -->
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+                    <div style="background:${isWeekly ? 'rgba(0,255,136,0.1)' : 'rgba(212,175,55,0.1)'}; 
+                                border:1px solid ${isWeekly ? 'rgba(0,255,136,0.3)' : 'rgba(212,175,55,0.3)'};
+                                border-radius:20px; padding:4px 14px;
+                                font-family:'Share Tech Mono',monospace; font-size:0.65rem;
+                                color:${color}; letter-spacing:1px;">
+                        ${total} MEMBERS
+                    </div>
+                </div>
+
+                <!-- Members cards -->
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    ${snap.docs.map((doc, i) => {
+                        const d    = doc.data();
+                        const time = d.registered_at
+                            ? new Date(d.registered_at.seconds * 1000)
+                                .toLocaleDateString('en-GB', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'})
+                            : '';
+                        const initial = (d.manager_name || '?').charAt(0).toUpperCase();
+
+                        return `
+                        <div style="
+                            background:var(--card); border-radius:12px; padding:12px 14px;
+                            display:flex; align-items:center; gap:12px;
+                            border:1px solid var(--border); position:relative; overflow:hidden;">
+                            <!-- Glow left border -->
+                            <div style="position:absolute; left:0; top:0; bottom:0; width:3px; background:${color}; opacity:0.6;"></div>
+
+                            <!-- Rank -->
+                            <div style="font-family:'Share Tech Mono',monospace; font-size:0.65rem; color:var(--dim); width:18px; text-align:center; flex-shrink:0;">
+                                ${i + 1}
+                            </div>
+
+                            <!-- Avatar -->
+                            <div style="
+                                width:36px; height:36px; border-radius:50%; flex-shrink:0;
+                                background:${isWeekly ? 'linear-gradient(135deg,#003d1a,#001a0a)' : 'linear-gradient(135deg,#2a1800,#110a00)'};
+                                border:1.5px solid ${isWeekly ? 'rgba(0,255,136,0.3)' : 'rgba(212,175,55,0.3)'};
+                                display:flex; align-items:center; justify-content:center;
+                                font-family:'Rajdhani',sans-serif; font-weight:700;
+                                font-size:0.95rem; color:${color};">
+                                ${initial}
+                            </div>
+
+                            <!-- Info -->
+                            <div style="flex:1; min-width:0;">
+                                <div style="font-family:'Rajdhani',sans-serif; font-weight:700;
+                                            font-size:0.95rem; color:var(--text);
+                                            white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                    ${d.manager_name || 'Unknown'}
+                                </div>
+                                <div style="font-family:'Share Tech Mono',monospace; font-size:0.58rem;
+                                            color:var(--dim); margin-top:2px;
+                                            white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                    ${d.team_name || ''}
+                                </div>
+                            </div>
+
+                            <!-- Time + badge -->
+                            <div style="text-align:right; flex-shrink:0;">
+                                <span class="fee-badge ${isWeekly ? 'badge-paid' : ''}" 
+                                      style="${!isWeekly ? `background:rgba(212,175,55,0.12); color:var(--gold); border:1px solid rgba(212,175,55,0.3);` : ''}">
+                                    ✓ PAID
+                                </span>
+                                <div style="font-family:'Share Tech Mono',monospace; font-size:0.55rem;
+                                            color:var(--dim); margin-top:4px;">
+                                    ${time}
+                                </div>
+                            </div>
+                        </div>`;
+                    }).join('')}
+                </div>
+            `;
+        }, err => {
+            const el = document.getElementById('members-list');
+            if (el) el.innerHTML = `<div style="color:var(--danger);text-align:center;padding:16px;font-size:0.8rem;">${err.message}</div>`;
+        });
 }
 
 // ── News Section ──────────────────────────────────────────────────────────────
