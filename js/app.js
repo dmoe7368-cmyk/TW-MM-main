@@ -62,9 +62,7 @@ window.showTab = function(tabId) {
 };
 
 // ── App Start ─────────────────────────────────────────
-// auth.js မှာ onAuthStateChanged ရှိပြီးသား
-// ဒီနေရာမှာ window.onload မှာ home ကို တစ်ကြိမ်တည်း ခေါ်မယ်
-window.addEventListener('load', () => {
-    console.log("All scripts loaded ✅");
+window.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM ready ✅");
     window.showTab('home');
 });
