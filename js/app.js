@@ -1,13 +1,11 @@
 /**
  * app.js — TW MM Tournament
- * MUST be loaded LAST — after all other scripts
+ * *** MUST BE LAST SCRIPT ***
  */
 
 window.currentTab = '';
 
 window.showTab = function(tabId) {
-    if (window._showingAuthForm) return;
-
     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
     const btn = document.getElementById('btn-' + tabId);
     if (btn) btn.classList.add('active');
@@ -44,6 +42,13 @@ window.showTab = function(tabId) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-// app.js သည် နောက်ဆုံး load ဖြစ်တာကြောင့်
-// ဒီနေရာ ရောက်တဲ့အချိန် scripts အကုန် ready ဖြစ်ပြီးဖြစ်တယ်
-window.showTab('home');
+// ── App Init ──────────────────────────────────────────────────────────────────
+// app.js နောက်ဆုံး load ဆိုတော့ scripts အကုန် ready
+// auth state ကို တစ်ကြိမ်တည်း ကြားပြီး home render လုပ်မယ်
+firebase.auth().onAuthStateChanged(function(user) {
+    // ဒီ listener က first fire မှာပဲ home render လုပ်မယ်
+    if (!window._appStarted) {
+        window._appStarted = true;
+        window.showTab('home');
+    }
+});

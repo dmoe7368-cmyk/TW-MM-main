@@ -69,11 +69,11 @@ firebase.auth().onAuthStateChanged(async (user) => {
         `;
     }
 
-    // Auth form ပြနေရင် re-render မလုပ်
-    if (window._showingAuthForm) return;
-
-    if (window.currentTab === 'home'      && typeof window.renderHome      === 'function') window.renderHome();
-    if (window.currentTab === 'community' && typeof window.renderCommunity === 'function') window.renderCommunity();
+    // auth ပြောင်းတာနဲ့ header ကိုပဲ update လုပ် — tab render ကို app.js က handle လုပ်မယ်
+    // Home tab ဆိုရင်တော့ fee status ပြောင်းသွားနိုင်လို့ re-render လုပ်မယ်
+    if (window.currentTab === 'home' && typeof window.renderHome === 'function') {
+        window.renderHome();
+    }
 });
 
 // ── Render Auth Form (Full Screen Modal) ─────────────────────────────────────
