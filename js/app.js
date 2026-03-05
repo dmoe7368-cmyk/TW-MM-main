@@ -6,8 +6,9 @@
 window.currentTab = '';
 
 window.showTab = function(tabId) {
-    console.log("Tab:", tabId);
+    console.log("showTab:", tabId);
 
+    // Active nav
     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
     const btn = document.getElementById('btn-' + tabId);
     if (btn) btn.classList.add('active');
@@ -18,7 +19,6 @@ window.showTab = function(tabId) {
 
     switch(tabId) {
         case 'home':
-            // retry ၃ ကြိမ် — script load အချိန်ပေးရန်
             if (typeof window.renderHome === 'function') {
                 window.renderHome();
             } else {
@@ -29,11 +29,11 @@ window.showTab = function(tabId) {
                     if (typeof window.renderHome === 'function') {
                         clearInterval(retry);
                         window.renderHome();
-                    } else if (tries >= 10) {
+                    } else if (tries >= 20) {
                         clearInterval(retry);
-                        main.innerHTML = `<div class="loading"><p style="color:var(--danger)">home.js load မရဘူး — refresh လုပ်ပါ</p></div>`;
+                        main.innerHTML = `<div class="loading"><p style="color:var(--danger);">home.js load မရဘူး — refresh လုပ်ပါ</p></div>`;
                     }
-                }, 300);
+                }, 200);
             }
             break;
 
@@ -61,10 +61,10 @@ window.showTab = function(tabId) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-// App Start — scripts အကုန်ပြီးမှ fire ဖြစ်အောင်
-document.addEventListener('DOMContentLoaded', () => {
-    firebase.auth().onAuthStateChanged((user) => {
-        console.log("Auth ready:", user ? user.uid : 'none');
-        window.showTab('home');
-    });
+// ── App Start ─────────────────────────────────────────
+// auth.js မှာ onAuthStateChanged ရှိပြီးသား
+// ဒီနေရာမှာ window.onload မှာ home ကို တစ်ကြိမ်တည်း ခေါ်မယ်
+window.addEventListener('load', () => {
+    console.log("All scripts loaded ✅");
+    window.showTab('home');
 });
