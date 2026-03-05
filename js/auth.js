@@ -76,22 +76,41 @@ firebase.auth().onAuthStateChanged(async (user) => {
     if (window.currentTab === 'community' && typeof window.renderCommunity === 'function') window.renderCommunity();
 });
 
-// ── Render Auth Form ──────────────────────────────────────────────────────────
+// ── Render Auth Form (Full Screen Modal) ─────────────────────────────────────
 window.renderAuthUI = function() {
     window._showingAuthForm = true;
-    const mainRoot = document.getElementById('main-root');
 
-    mainRoot.innerHTML = `
-        <div class="auth-form-container">
+    // main-root မကွယ်ဘဲ modal ထပ်ပေါ်မယ်
+    // existing auth-modal ရှိရင် မထပ်ဖွင့်
+    if (document.getElementById('auth-modal')) return;
+
+    const modal = document.createElement('div');
+    modal.id = 'auth-modal';
+    modal.style.cssText = `
+        position: fixed; inset: 0; z-index: 4000;
+        background: rgba(2,13,6,0.92);
+        backdrop-filter: blur(16px);
+        display: flex; align-items: flex-start;
+        justify-content: center;
+        overflow-y: auto;
+        animation: fadeIn 0.25s ease;
+        padding-bottom: 80px;
+    `;
+
+    modal.innerHTML = `
+        <div class="auth-form-container" style="width:100%;">
 
             <!-- Logo -->
             <div style="text-align:center; margin-bottom:28px;">
-                <div style="width:56px; height:56px; background:linear-gradient(135deg,#00ff88,#00aa55);
-                            border-radius:16px; display:flex; align-items:center; justify-content:center;
-                            font-size:1.6rem; margin:0 auto 12px;
-                            box-shadow:0 0 20px rgba(0,255,136,0.3);">⚽</div>
-                <h2 style="font-family:'Rajdhani',sans-serif; font-size:1.4rem; font-weight:700;
-                           color:var(--green); letter-spacing:1px; margin-bottom:4px;">TW MM TOURNAMENT</h2>
+                <div style="width:56px; height:56px;
+                            background:linear-gradient(135deg,#00ff88,#00aa55);
+                            border-radius:16px; display:flex; align-items:center;
+                            justify-content:center; font-size:1.6rem;
+                            margin:0 auto 12px;
+                            box-shadow:0 0 24px rgba(0,255,136,0.35);">⚽</div>
+                <h2 style="font-family:'Rajdhani',sans-serif; font-size:1.4rem;
+                           font-weight:700; color:var(--green); letter-spacing:1px;
+                           margin-bottom:4px;">TW MM TOURNAMENT</h2>
                 <p style="font-family:'Share Tech Mono',monospace; font-size:0.6rem;
                           color:var(--dim); letter-spacing:2px;">SIGN IN TO CONTINUE</p>
             </div>
@@ -99,7 +118,7 @@ window.renderAuthUI = function() {
             <!-- Tab Toggle -->
             <div style="display:flex; background:#000; padding:4px; border-radius:40px;
                         margin-bottom:24px; border:1px solid var(--border);">
-                <button id="tab-login"  onclick="window.toggleAuthTab('login')"
+                <button id="tab-login" onclick="window.toggleAuthTab('login')"
                     style="flex:1; padding:10px; border-radius:40px; border:none;
                            background:var(--green); color:#000;
                            font-family:'Rajdhani',sans-serif; font-weight:700;
@@ -128,8 +147,8 @@ window.renderAuthUI = function() {
                     <div style="flex:1; height:1px; background:var(--border);"></div>
                 </div>
                 <button onclick="window.loginWithGoogle()" class="primary-btn"
-                    style="background:#fff; color:#000; display:flex; align-items:center;
-                           justify-content:center; gap:10px;">
+                    style="background:#fff; color:#000; display:flex;
+                           align-items:center; justify-content:center; gap:10px;">
                     <svg width="18" height="18" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                         <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -152,17 +171,29 @@ window.renderAuthUI = function() {
                 </button>
             </div>
 
-            <!-- Back -->
-            <button onclick="window._showingAuthForm=false; window.showTab('home');"
-                style="width:100%; margin-top:14px; padding:11px; border-radius:10px;
+            <!-- Close -->
+            <button onclick="window.closeAuthModal()"
+                style="width:100%; margin-top:14px; padding:12px; border-radius:10px;
                        border:1px solid var(--border); background:transparent;
                        color:var(--dim); font-family:'Rajdhani',sans-serif;
                        font-weight:600; font-size:0.85rem; cursor:pointer; letter-spacing:1px;">
-                ← BACK
+                ✕ CLOSE
             </button>
 
         </div>
     `;
+
+    document.body.appendChild(modal);
+};
+
+window.closeAuthModal = function() {
+    const modal = document.getElementById('auth-modal');
+    if (modal) {
+        modal.style.opacity = '0';
+        modal.style.transition = 'opacity 0.2s';
+        setTimeout(() => modal.remove(), 200);
+    }
+    window._showingAuthForm = false;
 };
 
 // ── Tab Toggle ────────────────────────────────────────────────────────────────
@@ -207,7 +238,7 @@ window.handleSignUp = async () => {
             joined_at:     firebase.firestore.FieldValue.serverTimestamp(),
         });
         window.showToast("Account ဖန်တီးပြီးပါပြီ! ✅", "success");
-        window._showingAuthForm = false;
+        window.closeAuthModal();
         setTimeout(() => location.reload(), 1200);
     } catch (e) {
         const msg = e.code === 'auth/email-already-in-use' ? 'Email ရှိပြီးသားပါ' :
@@ -225,20 +256,18 @@ window.handleLogin = () => {
     firebase.auth().signInWithEmailAndPassword(email, pass)
         .then(() => {
             window.showToast("Welcome Back! ⚽", "success");
-            window._showingAuthForm = false;
-            setTimeout(() => location.reload(), 1000);
+            window.closeAuthModal();
+            setTimeout(() => location.reload(), 800);
         })
-        .catch(e => {
-            window.showToast("Email သို့မဟုတ် Password မှားနေသည်", "error");
-        });
+        .catch(() => window.showToast("Email သို့မဟုတ် Password မှားနေသည်", "error"));
 };
 
 window.loginWithGoogle = () => {
     firebase.auth().signInWithPopup(provider)
         .then(() => {
             window.showToast("Google Login Success! ✅", "success");
-            window._showingAuthForm = false;
-            setTimeout(() => location.reload(), 1000);
+            window.closeAuthModal();
+            setTimeout(() => location.reload(), 800);
         })
         .catch(e => console.error(e));
 };
