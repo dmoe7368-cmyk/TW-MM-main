@@ -230,7 +230,14 @@ main {
 .nav-label { font-family: 'Share Tech Mono', monospace; font-size: 0.52rem; letter-spacing: 0.5px; }
 
 /* ── 11. Auth Forms ──────────────────────────── */
-.auth-form-container { max-width: 420px; margin: 30px auto; padding: 24px 20px; animation: fadeUp 0.3s ease; }
+.auth-form-container {
+    max-width: 420px;
+    margin: 20px auto;
+    padding: 24px 20px 40px;
+    animation: fadeUp 0.3s ease;
+    position: relative;
+    z-index: 2;
+}
 
 .auth-input {
     width: 100%; padding: 13px 15px; margin-bottom: 12px;
