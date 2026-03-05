@@ -1,0 +1,316 @@
+/* =============================================
+   TW MM TOURNAMENT — style.css
+   Theme: Dark Green FPL + Gradient Glow Cards
+   ============================================= */
+
+/* ── 1. Variables ────────────────────────────── */
+:root {
+    --green:      #00ff88;
+    --green-dim:  #00cc6a;
+    --green-glow: rgba(0,255,136,0.15);
+    --gold:       #D4AF37;
+    --gold-glow:  rgba(212,175,55,0.15);
+    --bg:         #020d06;
+    --bg2:        #050f08;
+    --card:       #0a1a0f;
+    --card2:      #0d2015;
+    --border:     #0d2a14;
+    --text:       #e8ffe8;
+    --dim:        #4a7a55;
+    --danger:     #ff4d4d;
+    --nav-h:      68px;
+}
+
+/* ── 2. Reset & Base ─────────────────────────── */
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow Condensed', 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    padding-bottom: var(--nav-h);
+}
+
+body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse 60% 35% at 50% 0%, rgba(0,255,136,0.05) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ── 3. Header ───────────────────────────────── */
+.app-header {
+    position: sticky; top: 0; z-index: 1000;
+    padding: 12px 16px;
+    background: rgba(2,13,6,0.94);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0,255,136,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-badge { display: flex; align-items: center; gap: 10px; }
+
+.logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, #00ff88, #00aa55);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    box-shadow: 0 0 12px rgba(0,255,136,0.3);
+    flex-shrink: 0;
+}
+
+.logo-text { display: flex; flex-direction: column; line-height: 1; }
+
+.logo-main {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700; font-size: 1.2rem;
+    color: var(--green); letter-spacing: 1px;
+}
+
+.logo-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.5rem; color: var(--gold);
+    letter-spacing: 3px; text-transform: uppercase; margin-top: 2px;
+}
+
+.auth-container { display: flex; align-items: center; gap: 8px; }
+
+.coin-badge {
+    background: linear-gradient(135deg, #1a1200, #2a1e00);
+    border: 1px solid rgba(212,175,55,0.5);
+    border-radius: 20px; padding: 5px 11px;
+    display: flex; align-items: center; gap: 5px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700; font-size: 0.85rem; color: var(--gold);
+}
+
+.user-pill {
+    background: rgba(0,255,136,0.08);
+    border: 1px solid rgba(0,255,136,0.25);
+    border-radius: 20px; padding: 5px 12px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600; font-size: 0.85rem;
+    color: var(--green); cursor: pointer;
+}
+
+/* ── 4. Main ─────────────────────────────────── */
+main {
+    position: relative; z-index: 1;
+    max-width: 600px; margin: 0 auto;
+    padding: 16px 14px; min-height: 80vh;
+}
+
+/* ── 5. Section Title ────────────────────────── */
+.section-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem; color: var(--dim);
+    letter-spacing: 3px; text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+}
+.section-title::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+}
+
+/* ── 6. Glow Cards ───────────────────────────── */
+.glow-card {
+    position: relative;
+    background: var(--card);
+    border-radius: 16px; padding: 16px;
+    margin-bottom: 12px; overflow: hidden;
+    transition: transform 0.18s;
+    animation: fadeUp 0.4s ease both;
+}
+.glow-card::before {
+    content: ''; position: absolute; inset: 0;
+    border-radius: 16px; padding: 1px;
+    background: linear-gradient(135deg, rgba(0,255,136,0.35), transparent 55%, rgba(0,255,136,0.08));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+}
+.glow-card.gold-glow::before {
+    background: linear-gradient(135deg, rgba(212,175,55,0.45), transparent 55%, rgba(212,175,55,0.1));
+}
+.glow-card:active { transform: scale(0.985); }
+
+/* ── 7. News Cards ───────────────────────────── */
+.news-img-placeholder {
+    width: 100%; height: 160px; border-radius: 10px;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #0a2a14, #051208);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem; border: 1px dashed rgba(0,255,136,0.12); overflow: hidden;
+}
+.news-img-placeholder img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+
+.news-tag {
+    display: inline-block;
+    background: rgba(0,255,136,0.08); border: 1px solid rgba(0,255,136,0.2);
+    border-radius: 6px; padding: 2px 8px; font-size: 0.6rem;
+    color: var(--green); font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 1px; margin-bottom: 7px; text-transform: uppercase;
+}
+.news-tag.gold { background: rgba(212,175,55,0.08); border-color: rgba(212,175,55,0.25); color: var(--gold); }
+
+.news-title { font-size: 1rem; font-weight: 800; color: var(--text); line-height: 1.3; margin-bottom: 5px; }
+.news-body  { font-size: 0.88rem; color: var(--dim); line-height: 1.55; }
+.news-meta {
+    margin-top: 10px; display: flex; justify-content: space-between;
+    font-family: 'Share Tech Mono', monospace; font-size: 0.58rem; color: #2a5a35;
+    border-top: 1px solid var(--border); padding-top: 8px;
+}
+
+/* ── 8. Fee Cards ────────────────────────────── */
+.fee-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+
+.fee-card {
+    position: relative; background: var(--card);
+    border-radius: 14px; padding: 16px 12px; text-align: center; overflow: hidden;
+}
+.fee-card::before {
+    content: ''; position: absolute; inset: 0; border-radius: 14px; padding: 1px;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+}
+.fee-card.paid::before    { background: linear-gradient(135deg, rgba(0,255,136,0.55), rgba(0,255,136,0.08)); }
+.fee-card.unpaid::before  { background: linear-gradient(135deg, rgba(255,77,77,0.4), rgba(255,77,77,0.05)); }
+.fee-card.pending::before { background: linear-gradient(135deg, rgba(212,175,55,0.5), rgba(212,175,55,0.05)); }
+
+.fee-status-icon { font-size: 1.8rem; margin-bottom: 5px; }
+.fee-label { font-family: 'Share Tech Mono', monospace; font-size: 0.58rem; color: var(--dim); letter-spacing: 1.5px; margin-bottom: 3px; text-transform: uppercase; }
+.fee-type  { font-size: 0.95rem; font-weight: 800; color: var(--text); margin-bottom: 7px; }
+
+.fee-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.6rem; font-weight: 700; font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; }
+.badge-paid    { background: rgba(0,255,136,0.12); color: var(--green);  border: 1px solid rgba(0,255,136,0.3); }
+.badge-unpaid  { background: rgba(255,77,77,0.1);  color: #ff6b6b;       border: 1px solid rgba(255,77,77,0.25); }
+.badge-pending { background: rgba(212,175,55,0.1); color: var(--gold);   border: 1px solid rgba(212,175,55,0.3); }
+
+/* ── 9. Register Buttons ─────────────────────── */
+.reg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+
+.reg-btn { position: relative; padding: 18px 12px; border-radius: 14px; border: none; cursor: pointer; overflow: hidden; text-align: center; transition: transform 0.15s; background: none; }
+.reg-btn:active { transform: scale(0.95); }
+
+.reg-btn.weekly { background: linear-gradient(145deg, #003d1a, #001a0a); box-shadow: 0 4px 18px rgba(0,255,136,0.12); }
+.reg-btn.weekly::before { content: ''; position: absolute; inset: 0; border-radius: 14px; padding: 1.5px; background: linear-gradient(135deg, rgba(0,255,136,0.65), transparent 60%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
+
+.reg-btn.cup { background: linear-gradient(145deg, #2a1800, #110a00); box-shadow: 0 4px 18px rgba(212,175,55,0.12); }
+.reg-btn.cup::before { content: ''; position: absolute; inset: 0; border-radius: 14px; padding: 1.5px; background: linear-gradient(135deg, rgba(212,175,55,0.65), transparent 60%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
+
+.reg-btn-icon  { font-size: 1.8rem; display: block; margin-bottom: 5px; }
+.reg-btn-label { font-size: 0.58rem; font-family: 'Share Tech Mono', monospace; letter-spacing: 1.5px; display: block; margin-bottom: 2px; text-transform: uppercase; }
+.reg-btn.weekly .reg-btn-label { color: rgba(0,255,136,0.6); }
+.reg-btn.cup    .reg-btn-label { color: rgba(212,175,55,0.6); }
+.reg-btn-name  { font-size: 1.05rem; font-weight: 900; display: block; font-family: 'Rajdhani', sans-serif; }
+.reg-btn.weekly .reg-btn-name  { color: var(--green); }
+.reg-btn.cup    .reg-btn-name  { color: var(--gold); }
+.reg-btn-fee   { margin-top: 7px; font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; display: block; }
+.reg-btn.weekly .reg-btn-fee   { color: rgba(0,255,136,0.45); }
+.reg-btn.cup    .reg-btn-fee   { color: rgba(212,175,55,0.45); }
+
+/* ── 10. Bottom Nav ──────────────────────────── */
+.bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-h);
+    background: rgba(2,10,5,0.97); backdrop-filter: blur(24px);
+    border-top: 1px solid rgba(0,255,136,0.08);
+    display: flex; justify-content: space-around; align-items: center;
+    z-index: 2000; padding-bottom: env(safe-area-inset-bottom);
+}
+.nav-item { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; cursor: pointer; color: var(--dim); transition: color 0.2s, transform 0.2s; padding: 0; }
+.nav-item.active { color: var(--green); transform: translateY(-3px); }
+.nav-icon-wrap { width: 40px; height: 34px; border-radius: 10px; border: 1px solid transparent; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+.nav-item.active .nav-icon-wrap { background: rgba(0,255,136,0.1); border-color: rgba(0,255,136,0.25); box-shadow: 0 0 12px rgba(0,255,136,0.15); }
+.nav-label { font-family: 'Share Tech Mono', monospace; font-size: 0.52rem; letter-spacing: 0.5px; }
+
+/* ── 11. Auth Forms ──────────────────────────── */
+.auth-form-container { max-width: 420px; margin: 30px auto; padding: 24px 20px; animation: fadeUp 0.3s ease; }
+
+.auth-input {
+    width: 100%; padding: 13px 15px; margin-bottom: 12px;
+    border-radius: 12px; border: 1px solid var(--border);
+    background: var(--card); color: var(--text);
+    font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; outline: none; transition: border 0.2s;
+}
+.auth-input:focus { border-color: rgba(0,255,136,0.4); box-shadow: 0 0 0 3px rgba(0,255,136,0.06); }
+
+.primary-btn {
+    width: 100%; padding: 14px; border-radius: 12px; border: none;
+    font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem;
+    cursor: pointer; background: var(--green); color: #000;
+    transition: opacity 0.2s, transform 0.15s; text-transform: uppercase; letter-spacing: 1px;
+}
+.primary-btn:active { transform: scale(0.98); opacity: 0.9; }
+
+/* ── 12. Modal & Profile ─────────────────────── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(12px); z-index: 3000; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.25s ease; }
+
+.profile-card {
+    background: var(--card); width: 90%; max-width: 380px;
+    padding: 28px 22px; border-radius: 22px;
+    border: 1px solid rgba(0,255,136,0.2); text-align: center;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 0 40px rgba(0,255,136,0.08);
+}
+.profile-header { margin-bottom: 18px; }
+.profile-avatar { width: 60px; height: 60px; background: linear-gradient(135deg, #003d1a, #001a0a); border: 2px solid rgba(0,255,136,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin: 0 auto 10px; }
+.profile-card h2 { font-family: 'Rajdhani', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.profile-info { background: #000; border-radius: 12px; padding: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; text-align: left; }
+.info-item { display: flex; flex-direction: column; gap: 3px; }
+.info-item .label { font-family: 'Share Tech Mono', monospace; color: var(--dim); font-size: 0.58rem; text-transform: uppercase; letter-spacing: 1px; }
+.info-item .val { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.95rem; color: var(--text); }
+
+.logout-btn { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid rgba(255,77,77,0.3); background: rgba(255,77,77,0.08); color: #ff6b6b; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.9rem; cursor: pointer; margin-bottom: 8px; letter-spacing: 1px; }
+.close-btn  { width: 100%; padding: 11px; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--dim); font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.9rem; cursor: pointer; letter-spacing: 1px; }
+
+/* ── 13. Toast ───────────────────────────────── */
+.toast-container { position: fixed; top: 70px; left: 50%; transform: translateX(-50%); z-index: 9999; width: 90%; max-width: 340px; }
+.toast-alert { background: var(--card2); color: var(--text); padding: 13px 16px; border-radius: 12px; border-left: 3px solid var(--green); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); animation: slideDown 0.35s ease forwards; font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.95rem; }
+.toast-alert.success { border-left-color: var(--green); }
+.toast-alert.error   { border-left-color: var(--danger); }
+.toast-alert.gold    { border-left-color: var(--gold); }
+
+/* ── 14. Loading ─────────────────────────────── */
+.loading { text-align: center; padding: 60px 20px; color: var(--dim); font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; letter-spacing: 1px; }
+.spinner { width: 28px; height: 28px; border: 2.5px solid rgba(0,255,136,0.1); border-left-color: var(--green); border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 16px; }
+
+/* ── 15. Community ───────────────────────────── */
+.comm-wrapper { max-width: 600px; margin: auto; padding: 16px 0 20px; }
+.post-card { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--green); padding: 14px; margin-bottom: 12px; border-radius: 14px; }
+.initial-box { width: 38px; height: 38px; background: linear-gradient(45deg, #00ff88, #00aa55); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; font-size: 16px; text-transform: uppercase; flex-shrink: 0; }
+.post-btn { background: var(--green); color: #000; font-family: 'Rajdhani', sans-serif; font-weight: 700; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; margin-top: 10px; font-size: 0.95rem; letter-spacing: 1px; }
+
+/* ── 16. Scout Tables ────────────────────────── */
+.scout-table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; font-size: 0.85rem; margin-bottom: 20px; border: 1px solid var(--border); }
+.scout-table th { background: var(--card2); color: var(--dim); padding: 11px 10px; font-size: 0.65rem; text-transform: uppercase; text-align: center; border-bottom: 2px solid var(--border); font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; }
+.scout-table th:first-child { text-align: left; }
+.scout-table td { padding: 13px 10px; border-bottom: 1px solid var(--border); }
+.scout-table tr:active { background: #111; }
+
+/* ── 17. Pitch ───────────────────────────────── */
+.pitch-container { background: linear-gradient(180deg, #114211 0%, #0a2d0a 100%); border-radius: 14px; padding: 20px 10px; display: grid; grid-template-rows: repeat(4, 1fr); gap: 15px; border: 1px solid rgba(255,255,255,0.08); }
+.pitch-row { display: flex; justify-content: center; gap: 10px; }
+.player-card-mini { text-align: center; width: 60px; }
+.player-name-label { background: #000; color: #fff; font-size: 0.52rem; padding: 2px 4px; border-radius: 3px; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ── 18. Utils ───────────────────────────────── */
+.gold-text   { color: var(--gold); }
+.green-text  { color: var(--green); }
+.danger-text { color: var(--danger); }
+.dim-text    { color: var(--dim); }
+.live-dot    { display: inline-block; width: 7px; height: 7px; background: #ff4d4d; border-radius: 50%; animation: blink 1.2s infinite; margin-right: 5px; vertical-align: middle; }
+
+/* ── 19. Animations ──────────────────────────── */
+@keyframes fadeUp   { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
+@keyframes slideDown{ from { opacity:0; transform:translateY(-12px); } to { opacity:1; transform:translateY(0); } }
+@keyframes spin     { to { transform: rotate(360deg); } }
+@keyframes blink    { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+::-webkit-scrollbar { display: none; }
