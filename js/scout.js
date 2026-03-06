@@ -81,26 +81,31 @@ async function loadPlayerData() {
         </div>
 
         <!-- Table -->
-        <div style="border-radius:14px;border:1px solid var(--border);overflow:hidden;background:var(--card);">
+        <div style="border-radius:14px;border:1px solid var(--border);
+                    overflow:auto;max-height:calc(100vh - 280px);background:var(--card);">
             <table style="width:100%;border-collapse:collapse;">
                 <thead>
-                    <tr style="background:var(--card2);">
-                        <th style="padding:14px 14px;text-align:left;border-bottom:2px solid var(--green);">
+                    <tr style="background:var(--card2);position:sticky;top:0;z-index:3;">
+                        <th style="padding:14px 14px;text-align:left;
+                                   background:var(--card2);border-bottom:2px solid var(--green);">
                             <span style="font-family:'Rajdhani',sans-serif;font-size:0.9rem;
                                           font-weight:900;color:var(--green);">PLAYER</span>
                         </th>
                         <th onclick="window.reSortP('gw')"
-                            style="padding:14px 10px;text-align:center;cursor:pointer;border-bottom:2px solid var(--border);">
+                            style="padding:14px 10px;text-align:center;cursor:pointer;
+                                   background:var(--card2);border-bottom:2px solid var(--border);">
                             <span style="font-family:'Rajdhani',sans-serif;font-size:0.9rem;
                                           font-weight:800;color:var(--dim);">GW ▽</span>
                         </th>
                         <th onclick="window.reSortP('tot')"
-                            style="padding:14px 10px;text-align:center;cursor:pointer;border-bottom:2px solid var(--green);">
+                            style="padding:14px 10px;text-align:center;cursor:pointer;
+                                   background:var(--card2);border-bottom:2px solid var(--green);">
                             <span style="font-family:'Rajdhani',sans-serif;font-size:0.9rem;
                                           font-weight:900;color:var(--green);">TOT ▽</span>
                         </th>
                         <th onclick="window.reSortP('own')"
-                            style="padding:14px 10px;text-align:center;cursor:pointer;border-bottom:2px solid var(--border);">
+                            style="padding:14px 10px;text-align:center;cursor:pointer;
+                                   background:var(--card2);border-bottom:2px solid var(--border);">
                             <span style="font-family:'Rajdhani',sans-serif;font-size:0.9rem;
                                           font-weight:800;color:var(--dim);">OWN% ▽</span>
                         </th>
@@ -254,21 +259,25 @@ window.fetchL = async (key) => {
     window.allLeagues = teams;
 
     root.innerHTML = `
-        <div style="border-radius:14px;border:1px solid var(--border);overflow:hidden;background:var(--card);">
+        <div style="border-radius:14px;border:1px solid var(--border);
+                    overflow:auto;max-height:calc(100vh - 280px);background:var(--card);">
             <table style="width:100%;border-collapse:collapse;">
                 <thead>
-                    <tr style="background:var(--card2);">
-                        <th style="padding:14px 14px;text-align:left;border-bottom:2px solid var(--green);">
+                    <tr style="background:var(--card2);position:sticky;top:0;z-index:3;">
+                        <th style="padding:14px 14px;text-align:left;
+                                   background:var(--card2);border-bottom:2px solid var(--green);">
                             <span style="font-family:'Rajdhani',sans-serif;font-size:0.9rem;
                                           font-weight:900;color:var(--green);">MANAGER</span>
                         </th>
                         <th onclick="window.reSortL('gw')"
-                            style="padding:14px 10px;text-align:center;cursor:pointer;border-bottom:2px solid var(--border);">
+                            style="padding:14px 10px;text-align:center;cursor:pointer;
+                                   background:var(--card2);border-bottom:2px solid var(--border);">
                             <span style="font-family:'Rajdhani',sans-serif;font-size:0.9rem;
                                           font-weight:800;color:var(--dim);">GW ▽</span>
                         </th>
                         <th onclick="window.reSortL('tot')"
-                            style="padding:14px 10px;text-align:center;cursor:pointer;border-bottom:2px solid var(--green);">
+                            style="padding:14px 10px;text-align:center;cursor:pointer;
+                                   background:var(--card2);border-bottom:2px solid var(--green);">
                             <span style="font-family:'Rajdhani',sans-serif;font-size:0.9rem;
                                           font-weight:900;color:var(--green);">TOT ▽</span>
                         </th>

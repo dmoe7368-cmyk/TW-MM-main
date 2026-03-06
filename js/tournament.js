@@ -63,8 +63,9 @@ window.renderLeagues = function() {
             </div>
 
             <!-- Table -->
-            <div id="league-content" style="overflow-x:auto;border-radius:14px;
-                 border:1px solid var(--border);background:var(--card);">
+            <div id="league-content" style="overflow-x:auto;overflow-y:auto;
+                 max-height:calc(100vh - 260px);
+                 border-radius:14px;border:1px solid var(--border);background:var(--card);">
                 <div class="loading"><div class="spinner"></div></div>
             </div>
         </div>
@@ -112,12 +113,14 @@ window.filterDivision = function(divName) {
 
         const medals = ['🥇','🥈','🥉'];
 
-        let html = `
+        html += `
         <table style="width:100%;border-collapse:collapse;min-width:${130 + gwCols.length*58}px;">
             <thead>
-                <tr style="background:var(--card2);">
-                    <th style="padding:14px 14px;text-align:left;position:sticky;left:0;
-                               background:var(--card2);z-index:3;border-right:1px solid var(--border);
+                <tr style="background:var(--card2);position:sticky;top:0;z-index:4;">
+                    <th style="padding:14px 14px;text-align:left;
+                               position:sticky;left:0;top:0;
+                               background:var(--card2);z-index:5;
+                               border-right:1px solid var(--border);
                                border-bottom:2px solid var(--green);min-width:130px;">
                         <span style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;
                                       font-weight:900;color:var(--green);letter-spacing:1px;">
@@ -125,13 +128,15 @@ window.filterDivision = function(divName) {
                         </span>
                     </th>
                     ${gwCols.map(w => `
-                    <th style="padding:12px 6px;text-align:center;border-bottom:2px solid var(--border);
-                               min-width:48px;">
+                    <th style="padding:12px 6px;text-align:center;
+                               background:var(--card2);
+                               border-bottom:2px solid var(--border);min-width:48px;">
                         <span style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;
                                       font-weight:700;color:var(--dim);">W${w}</span>
                     </th>`).join('')}
-                    <th style="padding:12px 10px;text-align:center;border-bottom:2px solid var(--green);
-                               background:rgba(0,255,136,0.06);">
+                    <th style="padding:12px 10px;text-align:center;
+                               background:var(--card2);
+                               border-bottom:2px solid var(--green);">
                         <span style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;
                                       font-weight:900;color:var(--green);">TOTAL</span>
                     </th>
