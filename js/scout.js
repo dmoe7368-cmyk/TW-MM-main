@@ -342,11 +342,15 @@ window.showTPitch = (id) => {
             <div style="margin-top:10px;background:#000;padding:10px;border-radius:8px;
                          display:flex;justify-content:space-between;border:1px solid var(--border);gap:5px;">
                 ${bench.map(p=>`
-                    <div style="text-align:center;flex:1;">
-                        <svg width="28" height="28" viewBox="0 0 24 24" style="opacity:0.5;">
+                    <div style="text-align:center;flex:1;opacity:0.7;">
+                        <img src="https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_${p.team_code||0}${p.pos==='GKP'?'_1':''}-66.png"
+                             width="34" height="34"
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+                             style="display:block;margin:0 auto;">
+                        <svg width="34" height="34" viewBox="0 0 24 24" style="display:none;margin:0 auto;">
                             <path fill="${p.pos==='GKP'?'#ffeb3b':'#aaa'}" d="M13,2V4H11V2H8V4H6V7C6,8.1 6.9,9 8,9V22H16V9C17.1,9 18,8.1 18,7V4H16V2H13Z"/>
                         </svg>
-                        <div style="font-size:0.68rem;color:#aaa;font-family:'Rajdhani',sans-serif;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</div>
+                        <div style="font-size:0.68rem;color:#aaa;font-family:'Rajdhani',sans-serif;font-weight:700;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</div>
                         <div style="font-size:0.8rem;color:var(--dim);font-weight:900;font-family:'Rajdhani',sans-serif;">${p.points}</div>
                     </div>`).join('')}
             </div>
@@ -369,17 +373,24 @@ function renderPitchPlayers(arr, realVC) {
                          font-size:0.65rem;padding:1px 5px;border:1px solid #555;
                          border-radius:3px;font-weight:900;z-index:5;">V</div>`;
         }
-        const score = (p.points||0)*(p.multiplier||1);
-        return `<div style="text-align:center;width:68px;position:relative;">
-            <div style="position:relative;margin-bottom:2px;">${badge}
-                <svg width="30" height="30" viewBox="0 0 24 24">
-                    <path fill="${p.pos==='GKP'?'#ffeb3b':'var(--green)'}" d="M13,2V4H11V2H8V4H6V7C6,8.1 6.9,9 8,9V22H16V9C17.1,9 18,8.1 18,7V4H16V2H13Z"/>
+        const score   = (p.points||0)*(p.multiplier||1);
+        const kitCode = p.team_code || 0;
+        const isGK    = p.pos === 'GKP';
+        const kitUrl  = `https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_${kitCode}${isGK?'_1':''}-66.png`;
+
+        return `<div style="text-align:center;width:72px;position:relative;">
+            <div style="position:relative;margin-bottom:3px;">${badge}
+                <img src="${kitUrl}" width="44" height="44"
+                     style="display:block;margin:0 auto;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6));"
+                     onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+                <svg width="44" height="44" viewBox="0 0 24 24" style="display:none;margin:0 auto;">
+                    <path fill="${isGK?'#ffeb3b':'var(--green)'}" d="M13,2V4H11V2H8V4H6V7C6,8.1 6.9,9 8,9V22H16V9C17.1,9 18,8.1 18,7V4H16V2H13Z"/>
                 </svg>
             </div>
-            <div style="background:rgba(0,0,0,0.85);color:#fff;font-size:0.62rem;padding:2px 3px;
+            <div style="background:rgba(0,0,0,0.85);color:#fff;font-size:0.62rem;padding:2px 4px;
                          border-radius:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
                          max-width:100%;font-family:'Rajdhani',sans-serif;font-weight:700;">${p.name}</div>
-            <div style="font-size:0.8rem;color:var(--green);font-weight:900;font-family:'Rajdhani',sans-serif;">${score}</div>
+            <div style="font-size:0.82rem;color:var(--green);font-weight:900;font-family:'Rajdhani',sans-serif;">${score}</div>
         </div>`;
     }).join('');
 }
