@@ -7,16 +7,16 @@
 :root {
     --green:      #00ff88;
     --green-dim:  #00cc6a;
-    --green-glow: rgba(0,255,136,0.15);
+    --green-glow: rgba(0,255,136,0.10);
     --gold:       #D4AF37;
     --gold-glow:  rgba(212,175,55,0.15);
-    --bg:         #020d06;
-    --bg2:        #050f08;
-    --card:       #0a1a0f;
-    --card2:      #0d2015;
-    --border:     #0d2a14;
+    --bg:         #080808;
+    --bg2:        #0e0e0e;
+    --card:       #111111;
+    --card2:      #181818;
+    --border:     #222222;
     --text:       #e8ffe8;
-    --dim:        #4a7a55;
+    --dim:        #666666;
     --danger:     #ff4d4d;
     --nav-h:      68px;
 }
@@ -36,7 +36,7 @@ body {
 body::after {
     content: '';
     position: fixed; inset: 0;
-    background: radial-gradient(ellipse 60% 35% at 50% 0%, rgba(0,255,136,0.05) 0%, transparent 65%);
+    background: radial-gradient(ellipse 60% 35% at 50% 0%, rgba(0,255,136,0.02) 0%, transparent 65%);
     pointer-events: none;
     z-index: 0;
 }
@@ -179,9 +179,9 @@ main {
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
 }
-.fee-card.paid::before    { background: linear-gradient(135deg, rgba(0,255,136,0.55), rgba(0,255,136,0.08)); }
-.fee-card.unpaid::before  { background: linear-gradient(135deg, rgba(255,77,77,0.4), rgba(255,77,77,0.05)); }
-.fee-card.pending::before { background: linear-gradient(135deg, rgba(212,175,55,0.5), rgba(212,175,55,0.05)); }
+.fee-card.paid::before    { background: linear-gradient(135deg, rgba(0,255,136,0.18), rgba(0,255,136,0.03)); }
+.fee-card.unpaid::before  { background: linear-gradient(135deg, rgba(255,77,77,0.18), rgba(255,77,77,0.03)); }
+.fee-card.pending::before { background: linear-gradient(135deg, rgba(212,175,55,0.2), rgba(212,175,55,0.03)); }
 
 .fee-status-icon { font-size: 1.8rem; margin-bottom: 5px; }
 .fee-label { font-family: 'Share Tech Mono', monospace; font-size: 0.58rem; color: var(--dim); letter-spacing: 1.5px; margin-bottom: 3px; text-transform: uppercase; }
@@ -223,11 +223,11 @@ main {
     display: flex; justify-content: space-around; align-items: center;
     z-index: 2000; padding-bottom: env(safe-area-inset-bottom);
 }
-.nav-item { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; cursor: pointer; color: var(--dim); transition: color 0.2s, transform 0.2s; padding: 0; }
-.nav-item.active { color: var(--green); transform: translateY(-3px); }
-.nav-icon-wrap { width: 40px; height: 34px; border-radius: 10px; border: 1px solid transparent; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+.nav-item { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 3px; flex: 1; cursor: pointer; color: var(--dim); transition: color 0.2s, transform 0.2s; padding: 0; }
+.nav-item.active { color: var(--green); transform: translateY(-2px); }
+.nav-icon-wrap { width: 36px; height: 30px; border-radius: 10px; border: 1px solid transparent; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
 .nav-item.active .nav-icon-wrap { background: rgba(0,255,136,0.1); border-color: rgba(0,255,136,0.25); box-shadow: 0 0 12px rgba(0,255,136,0.15); }
-.nav-label { font-family: 'Share Tech Mono', monospace; font-size: 0.52rem; letter-spacing: 0.5px; }
+.nav-label { font-family: 'Rajdhani', sans-serif; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.3px; }
 
 /* ── 11. Auth Forms ──────────────────────────── */
 .auth-form-container {
