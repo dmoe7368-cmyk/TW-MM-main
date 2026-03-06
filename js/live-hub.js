@@ -21,35 +21,31 @@ window.renderLiveHub = function() {
     if (!mainRoot) return;
 
     mainRoot.innerHTML = `
-        <div style="max-width:600px;margin:0 auto;padding:14px 12px 30px;">
+        <div style="max-width:600px;margin:0 auto;display:flex;flex-direction:column;
+                    height:calc(100vh - var(--nav-h) - 60px);padding:12px 12px 0;">
 
-            <!-- Header Card -->
-            <div style="text-align:center;margin-bottom:22px;padding:22px 16px;
-                         background:var(--card);border-radius:16px;
-                         border:1px solid rgba(0,255,136,0.15);position:relative;overflow:hidden;">
-                <div style="position:absolute;inset:0;
-                             background:radial-gradient(ellipse 70% 60% at 50% 0%,rgba(0,255,136,0.06),transparent 70%);
-                             pointer-events:none;"></div>
-
-                <div style="font-family:'Rajdhani',sans-serif;font-size:0.8rem;font-weight:700;
-                             color:var(--dim);letter-spacing:3px;margin-bottom:8px;">TW MM TOURNAMENT</div>
-
-                <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;">
-                    <span style="font-size:2rem;">🏟️</span>
-                    <h2 style="margin:0;font-family:'Rajdhani',sans-serif;font-weight:900;
-                                font-size:2rem;color:var(--green);letter-spacing:3px;">TW FA CUP</h2>
+            <!-- Compact Header -->
+            <div style="flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+                         padding:12px 16px;margin-bottom:12px;
+                         background:var(--card);border-radius:14px;
+                         border:1px solid rgba(0,255,136,0.15);">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span style="font-size:1.4rem;">🏟️</span>
+                    <div>
+                        <div style="font-family:'Rajdhani',sans-serif;font-weight:900;
+                                    font-size:1.2rem;color:var(--green);letter-spacing:2px;
+                                    line-height:1.1;">TW FA CUP</div>
+                        <div style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;
+                                    font-weight:700;color:var(--dim);letter-spacing:1.5px;">
+                            KNOCKOUT BRACKET
+                        </div>
+                    </div>
                 </div>
-
-                <div style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;font-weight:700;
-                             color:var(--dim);letter-spacing:2px;margin-bottom:16px;">
-                    KNOCKOUT STAGE BRACKET
-                </div>
-
                 <!-- GW Badge -->
-                <div style="display:inline-flex;align-items:center;gap:8px;
+                <div style="display:flex;align-items:center;gap:7px;
                       background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.25);
-                      border-radius:20px;padding:8px 18px;">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                      border-radius:20px;padding:6px 12px;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
                          stroke="var(--green)" stroke-width="2.5" stroke-linecap="round">
                         <rect x="3" y="4" width="18" height="18" rx="2"/>
                         <line x1="16" y1="2" x2="16" y2="6"/>
@@ -57,16 +53,14 @@ window.renderLiveHub = function() {
                         <line x1="3" y1="10" x2="21" y2="10"/>
                     </svg>
                     <span id="fa-week-label" style="font-family:'Rajdhani',sans-serif;font-weight:800;
-                           font-size:0.95rem;color:var(--green);letter-spacing:1px;">GAMEWEEK —</span>
+                           font-size:0.85rem;color:var(--green);letter-spacing:1px;">GW —</span>
                 </div>
             </div>
 
-            <!-- Bracket -->
-            <div id="playoff-bracket-container" style="display:flex;flex-direction:column;gap:28px;"></div>
-
-            <div style="text-align:center;padding:24px 0 8px;font-family:'Rajdhani',sans-serif;
-                         font-size:0.75rem;color:var(--border);letter-spacing:2px;font-weight:700;">
-                POWERED BY TW MM TOURNAMENT
+            <!-- Scrollable Bracket -->
+            <div id="playoff-bracket-container"
+                 style="flex:1;overflow-y:auto;padding-bottom:16px;
+                        display:flex;flex-direction:column;gap:22px;">
             </div>
         </div>
     `;
