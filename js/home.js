@@ -49,8 +49,8 @@ function buildFeeStatus(d) {
     const coins     = d?.coins     ?? 0;
     const weekPaid  = d?.week_paid ?? false;
     const cupPaid   = d?.cup_paid  ?? false;
-    const mmkWeek   = 5 * 100;   // 5 coins × 100 MMK
-    const mmkCup    = 10 * 100;  // 10 coins × 100 MMK
+    const mmkWeek   = 1000;   // Weekly = 1,000 ကျပ်
+    const mmkCup    = 5000;   // Cup    = 5,000 ကျပ်
 
     return `
         <div class="section-title">📋 My Fee Status</div>
@@ -69,7 +69,7 @@ function buildFeeStatus(d) {
                 </span>
                 <span class="reg-btn-label">Register</span>
                 <span class="reg-btn-name">Weekly</span>
-                <span class="reg-btn-fee">5 🪙 · 500 ကျပ်</span>
+                <span class="reg-btn-fee">Weekly · 1,000 ကျပ်</span>
             </button>
             <button class="reg-btn cup" onclick="window.openRegisterModal('cup')">
                 <span class="reg-btn-icon">
@@ -79,7 +79,7 @@ function buildFeeStatus(d) {
                 </span>
                 <span class="reg-btn-label">Register</span>
                 <span class="reg-btn-name">Cup</span>
-                <span class="reg-btn-fee">10 🪙 · 1,000 ကျပ်</span>
+                <span class="reg-btn-fee">Cup · 5,000 ကျပ်</span>
             </button>
         </div>
     `;
@@ -95,7 +95,7 @@ function buildFeeCard(id, paid, label, coins, mmk) {
         <div class="fee-card ${cls}" id="fee-card-${id}">
             <div class="fee-status-icon">${icon}</div>
             <div class="fee-label">${label.toUpperCase()}</div>
-            <div class="fee-type">${coins} 🪙<br><small style="font-size:0.65rem;color:#4a7a55;font-family:'Share Tech Mono',monospace;">${mmk.toLocaleString()} ကျပ်</small></div>
+            <div class="fee-type">${coins} ကျပ်</div>
             <div style="margin-top:6px;">${badge}</div>
         </div>
     `;
@@ -105,20 +105,35 @@ function updateFeeCards(d) {
     const grid = document.getElementById('fee-grid');
     if (!grid) return;
     grid.innerHTML =
-        buildFeeCard('week', d.week_paid ?? false, 'Weekly', '5',  500) +
-        buildFeeCard('cup',  d.cup_paid  ?? false, 'Cup',    '10', 1000);
+        buildFeeCard('week', d.week_paid ?? false, 'Weekly', '1,000', 1000) +
+        buildFeeCard('cup',  d.cup_paid  ?? false, 'Cup',    '5,000', 5000);
 }
 
 function buildLoginPrompt() {
     return `
-        <div class="glow-card" style="text-align:center; padding:24px 16px; margin-bottom:20px;">
-            <div style="margin-bottom:12px; color:var(--green);">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <div style="background:var(--card);border:1px solid rgba(0,255,136,0.15);
+                    border-radius:14px;padding:14px 16px;margin-bottom:16px;
+                    display:flex;align-items:center;gap:12px;">
+            <div style="width:40px;height:40px;border-radius:50%;flex-shrink:0;
+                         background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.2);
+                         display:flex;align-items:center;justify-content:center;color:var(--green);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
                     <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
                 </svg>
             </div>
-            <p style="font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1rem; margin-bottom:14px; color:var(--text);">Fee Status ကြည့်ဖို့ Login ဝင်ပါ</p>
-            <button onclick="window.renderAuthUI()" class="primary-btn" style="max-width:200px; margin:0 auto;">LOGIN</button>
+            <div style="flex:1;">
+                <div style="font-family:'Rajdhani',sans-serif;font-weight:800;font-size:0.9rem;
+                             color:var(--text);">Fee Status ကြည့်ဖို့ Login ဝင်ပါ</div>
+                <div style="font-family:'Rajdhani',sans-serif;font-size:0.75rem;color:var(--dim);margin-top:2px;">
+                    Weekly <span style="color:var(--green);font-weight:700;">1,000 ကျပ်</span>
+                    &nbsp;·&nbsp;
+                    Cup <span style="color:var(--green);font-weight:700;">5,000 ကျပ်</span>
+                </div>
+            </div>
+            <button onclick="window.renderAuthUI()" class="primary-btn"
+                    style="flex-shrink:0;padding:8px 18px;font-size:0.85rem;border-radius:8px;">
+                LOGIN
+            </button>
         </div>
     `;
 }
