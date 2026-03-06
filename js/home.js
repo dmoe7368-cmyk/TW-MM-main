@@ -171,34 +171,38 @@ function updateFeeCards(d) {
 function buildLoginPrompt(cfg) {
     const weeklyOpen = cfg?.weekly_open !== false;
     const cupOpen    = cfg?.cup_open    !== false;
-    const weeklyText = weeklyOpen
-        ? `Weekly <span style="color:var(--green);font-weight:700;">1,000 ကျပ်</span>`
-        : `Weekly <span style="color:var(--dim);font-weight:700;">🔒 CLOSED</span>`;
-    const cupText = cupOpen
-        ? `Cup <span style="color:var(--green);font-weight:700;">5,000 ကျပ်</span>`
-        : `Cup <span style="color:var(--dim);font-weight:700;">🔒 CLOSED</span>`;
     return `
         <div style="background:var(--card);border:1px solid rgba(0,255,136,0.15);
-                    border-radius:14px;padding:14px 16px;margin-bottom:16px;
-                    display:flex;align-items:center;gap:12px;">
-            <div style="width:40px;height:40px;border-radius:50%;flex-shrink:0;
-                         background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.2);
-                         display:flex;align-items:center;justify-content:center;color:var(--green);">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                </svg>
-            </div>
-            <div style="flex:1;">
+                    border-radius:14px;padding:14px 16px;margin-bottom:16px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
                 <div style="font-family:'Rajdhani',sans-serif;font-weight:800;font-size:0.95rem;
                              color:var(--text);">Fee Status ကြည့်ဖို့ Login ဝင်ပါ</div>
-                <div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;color:var(--dim);margin-top:2px;">
-                    ${weeklyText} &nbsp;·&nbsp; ${cupText}
+                <button onclick="window.renderAuthUI()" class="primary-btn"
+                        style="flex-shrink:0;padding:8px 20px;font-size:0.85rem;
+                               border-radius:8px;white-space:nowrap;">
+                    LOGIN
+                </button>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:10px;">
+                <div style="flex:1;background:var(--card2);border-radius:8px;padding:8px 12px;
+                             border:1px solid var(--border);text-align:center;">
+                    <div style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;
+                                 color:var(--dim);font-weight:700;letter-spacing:1px;">WEEKLY</div>
+                    <div style="font-family:'Rajdhani',sans-serif;font-size:0.9rem;font-weight:900;
+                                 color:${weeklyOpen?'var(--green)':'var(--dim)'};margin-top:2px;">
+                        ${weeklyOpen ? '1,000 ကျပ်' : '🔒 CLOSED'}
+                    </div>
+                </div>
+                <div style="flex:1;background:var(--card2);border-radius:8px;padding:8px 12px;
+                             border:1px solid var(--border);text-align:center;">
+                    <div style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;
+                                 color:var(--dim);font-weight:700;letter-spacing:1px;">CUP</div>
+                    <div style="font-family:'Rajdhani',sans-serif;font-size:0.9rem;font-weight:900;
+                                 color:${cupOpen?'var(--green)':'var(--dim)'};margin-top:2px;">
+                        ${cupOpen ? '5,000 ကျပ်' : '🔒 CLOSED'}
+                    </div>
                 </div>
             </div>
-            <button onclick="window.renderAuthUI()" class="primary-btn"
-                    style="flex-shrink:0;padding:8px 18px;font-size:0.85rem;border-radius:8px;">
-                LOGIN
-            </button>
         </div>
     `;
 }
@@ -253,7 +257,6 @@ function loadMembers(type) {
 
     db.collection("tw_registrations")
         .where("type", "==", t)
-        .orderBy("registered_at", "desc")
         .get()
         .then(snap => {
             const el = document.getElementById('members-list');
@@ -265,55 +268,55 @@ function loadMembers(type) {
                     </p></div>`;
                 return;
             }
-            const color = 'var(--green)';
-            const total = snap.docs.length;
+            // Client-side sort by registered_at desc
+            const docs = snap.docs.sort((a,b) => {
+                const ta = a.data().registered_at?.seconds || 0;
+                const tb = b.data().registered_at?.seconds || 0;
+                return tb - ta;
+            });
+            const total = docs.length;
             el.innerHTML = `
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
                     <div style="background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.25);
-                                border-radius:20px;padding:4px 14px;
-                                font-family:'Rajdhani',sans-serif;font-size:0.8rem;
-                                font-weight:700;color:var(--green);letter-spacing:1px;">
-                        ${total} MEMBERS
+                                border-radius:20px;padding:5px 14px;
+                                font-family:'Rajdhani',sans-serif;font-size:0.85rem;
+                                font-weight:800;color:var(--green);letter-spacing:1px;">
+                        ${total} TEAMS · ${t==='weekly'?'1,000':'5,000'} ကျပ်
                     </div>
                 </div>
-                <div style="display:flex;flex-direction:column;gap:8px;">
-                    ${snap.docs.map((doc,i) => {
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                    ${docs.map((doc,i) => {
                         const d    = doc.data();
                         const time = d.registered_at
                             ? new Date(d.registered_at.seconds*1000)
                                 .toLocaleDateString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})
                             : '';
-                        const init = (d.manager_name||'?').charAt(0).toUpperCase();
+                        const init = (d.team_name||d.manager_name||'?').charAt(0).toUpperCase();
                         return `
-                        <div style="background:var(--card);border-radius:12px;padding:12px 14px;
-                                    display:flex;align-items:center;gap:12px;
+                        <div style="background:var(--card);border-radius:10px;padding:11px 14px;
+                                    display:flex;align-items:center;gap:10px;
                                     border:1px solid var(--border);position:relative;overflow:hidden;">
                             <div style="position:absolute;left:0;top:0;bottom:0;width:3px;
                                          background:var(--green);opacity:0.5;"></div>
-                            <div style="font-family:'Rajdhani',sans-serif;font-size:0.75rem;
-                                         color:var(--dim);width:20px;text-align:center;flex-shrink:0;
-                                         font-weight:700;">${i+1}</div>
-                            <div style="width:38px;height:38px;border-radius:50%;flex-shrink:0;
+                            <div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;
+                                         color:var(--dim);width:22px;text-align:center;
+                                         flex-shrink:0;font-weight:700;">${i+1}</div>
+                            <div style="width:34px;height:34px;border-radius:50%;flex-shrink:0;
                                          background:rgba(0,255,136,0.06);
-                                         border:1.5px solid rgba(0,255,136,0.25);
+                                         border:1.5px solid rgba(0,255,136,0.2);
                                          display:flex;align-items:center;justify-content:center;
-                                         font-family:'Rajdhani',sans-serif;font-weight:800;
-                                         font-size:1rem;color:var(--green);">${init}</div>
+                                         font-family:'Rajdhani',sans-serif;font-weight:900;
+                                         font-size:0.95rem;color:var(--green);">${init}</div>
                             <div style="flex:1;min-width:0;">
                                 <div style="font-family:'Rajdhani',sans-serif;font-weight:800;
                                              font-size:0.95rem;color:var(--text);
                                              white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                                    ${d.manager_name||'Unknown'}
-                                </div>
-                                <div style="font-family:'Rajdhani',sans-serif;font-size:0.75rem;
-                                             color:var(--dim);margin-top:2px;
-                                             white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                                    ${d.team_name||''}
+                                    ${d.team_name||d.manager_name||'Unknown'}
                                 </div>
                             </div>
                             <div style="text-align:right;flex-shrink:0;">
                                 <span class="fee-badge badge-paid">✓ PAID</span>
-                                <div style="font-family:'Rajdhani',sans-serif;font-size:0.65rem;
+                                <div style="font-family:'Rajdhani',sans-serif;font-size:0.62rem;
                                              color:var(--dim);margin-top:4px;">${time}</div>
                             </div>
                         </div>`;
