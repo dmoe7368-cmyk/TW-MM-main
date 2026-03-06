@@ -113,7 +113,7 @@ window.filterDivision = function(divName) {
 
         const medals = ['🥇','🥈','🥉'];
 
-        html += `
+        let html = `
         <table style="width:100%;border-collapse:collapse;min-width:${130 + gwCols.length*58}px;">
             <thead>
                 <tr style="background:var(--card2);position:sticky;top:0;z-index:4;">
