@@ -85,12 +85,14 @@ window.filterDivision = function(divName) {
     btnB.style.background = !isDivA ? 'var(--green)' : 'transparent';
     btnB.style.color      = !isDivA ? '#000' : 'var(--dim)';
 
+    // onSnapshot အစား .get() သုံးမယ် — mobile browser မှာ onSnapshot timeout ဖြစ်တတ်တယ်
     db.collection("tw_mm_tournament")
       .where("division","==",divName)
-      .onSnapshot(snapshot => {
+      .get()
+      .then(snapshot => {
         if (!snapshot || snapshot.empty) {
             content.innerHTML = `<div style="text-align:center;padding:50px;color:var(--dim);
-                font-family:'Rajdhani',sans-serif;font-size:1rem;">NO DATA FOUND</div>`;
+                font-family:'Rajdhani',sans-serif;font-size:1rem;">⚠️ NO DATA — division: "${divName}"</div>`;
             return;
         }
 
@@ -176,5 +178,10 @@ window.filterDivision = function(divName) {
 
         html += `</tbody></table>`;
         content.innerHTML = html;
-    });
+      })
+      .catch(err => {
+        content.innerHTML = `<div style="text-align:center;padding:40px;color:#ff4d4d;
+            font-family:'Rajdhani',sans-serif;font-size:0.9rem;">
+            ❌ Error: ${err.message}</div>`;
+      });
 };
