@@ -25,17 +25,31 @@ window.renderHome = async function() {
 
     main.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
 
+    // Load user data + remote config in parallel
     let userData = null;
+    let regConfig = { weekly_open: true, cup_open: true }; // default open
+
+    const promises = [];
+
     if (user) {
-        try {
-            const doc = await db.collection("users").doc(user.uid).get();
-            if (doc.exists) userData = doc.data();
-        } catch(e) { console.error(e); }
+        promises.push(
+            db.collection("users").doc(user.uid).get()
+              .then(doc => { if (doc.exists) userData = doc.data(); })
+              .catch(e => console.error(e))
+        );
     }
+
+    promises.push(
+        db.collection("tw_config").doc("settings").get()
+          .then(doc => { if (doc.exists) regConfig = { ...regConfig, ...doc.data() }; })
+          .catch(() => {}) // fail silently — default open
+    );
+
+    await Promise.all(promises);
 
     main.innerHTML = `
         <div style="max-width:600px;margin:0 auto;padding:14px 14px 30px;">
-            ${user ? buildFeeStatus(userData) : buildLoginPrompt()}
+            ${user ? buildFeeStatus(userData, regConfig) : buildLoginPrompt(regConfig)}
             ${buildMembersSection()}
             ${buildNewsSection()}
         </div>
@@ -56,9 +70,56 @@ window.renderHome = async function() {
 };
 
 // ── Fee Status (logged in) ─────────────────────────────────────────────────────
-function buildFeeStatus(d) {
-    const weekPaid = d?.week_paid ?? false;
-    const cupPaid  = d?.cup_paid  ?? false;
+function buildFeeStatus(d, cfg) {
+    const weekPaid   = d?.week_paid ?? false;
+    const cupPaid    = d?.cup_paid  ?? false;
+    const weeklyOpen = cfg?.weekly_open !== false;
+    const cupOpen    = cfg?.cup_open    !== false;
+
+    const weeklyBtn = weeklyOpen
+        ? `<button class="reg-btn weekly" onclick="window.openRegisterModal('weekly')">
+                <span class="reg-btn-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                </span>
+                <span class="reg-btn-label">Register</span>
+                <span class="reg-btn-name">Weekly</span>
+                <span class="reg-btn-fee">1,000 ကျပ်</span>
+           </button>`
+        : `<div style="flex:1;background:var(--card2);border:1px solid var(--border);
+                border-radius:14px;padding:16px;text-align:center;opacity:0.7;">
+                <div style="font-size:1.2rem;margin-bottom:4px;">🔒</div>
+                <div style="font-family:'Rajdhani',sans-serif;font-weight:800;font-size:0.85rem;
+                             color:var(--dim);">WEEKLY CLOSED</div>
+                <div style="font-family:'Rajdhani',sans-serif;font-size:0.75rem;color:var(--border);margin-top:2px;">
+                    Registration ပိတ်ထားသည်
+                </div>
+           </div>`;
+
+    const cupBtn = cupOpen
+        ? `<button class="reg-btn cup" onclick="window.openRegisterModal('cup')">
+                <span class="reg-btn-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                        <path d="M8 21h8M12 21v-5"/><path d="M5 3h14v7a7 7 0 01-14 0V3z"/>
+                        <path d="M5 7H2a5 5 0 004 4.9M19 7h3a5 5 0 01-4 4.9"/>
+                    </svg>
+                </span>
+                <span class="reg-btn-label">Register</span>
+                <span class="reg-btn-name">Cup</span>
+                <span class="reg-btn-fee">5,000 ကျပ်</span>
+           </button>`
+        : `<div style="flex:1;background:var(--card2);border:1px solid var(--border);
+                border-radius:14px;padding:16px;text-align:center;opacity:0.7;">
+                <div style="font-size:1.2rem;margin-bottom:4px;">🔒</div>
+                <div style="font-family:'Rajdhani',sans-serif;font-weight:800;font-size:0.85rem;
+                             color:var(--dim);">CUP CLOSED</div>
+                <div style="font-family:'Rajdhani',sans-serif;font-size:0.75rem;color:var(--border);margin-top:2px;">
+                    Registration ပိတ်ထားသည်
+                </div>
+           </div>`;
 
     return `
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
@@ -75,29 +136,8 @@ function buildFeeStatus(d) {
                           color:var(--green);">🎯 REGISTER NOW</span>
         </div>
         <div class="reg-grid">
-            <button class="reg-btn weekly" onclick="window.openRegisterModal('weekly')">
-                <span class="reg-btn-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-                        <rect x="3" y="4" width="18" height="18" rx="2"/>
-                        <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-                        <line x1="3" y1="10" x2="21" y2="10"/>
-                    </svg>
-                </span>
-                <span class="reg-btn-label">Register</span>
-                <span class="reg-btn-name">Weekly</span>
-                <span class="reg-btn-fee">1,000 ကျပ်</span>
-            </button>
-            <button class="reg-btn cup" onclick="window.openRegisterModal('cup')">
-                <span class="reg-btn-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-                        <path d="M8 21h8M12 21v-5"/><path d="M5 3h14v7a7 7 0 01-14 0V3z"/>
-                        <path d="M5 7H2a5 5 0 004 4.9M19 7h3a5 5 0 01-4 4.9"/>
-                    </svg>
-                </span>
-                <span class="reg-btn-label">Register</span>
-                <span class="reg-btn-name">Cup</span>
-                <span class="reg-btn-fee">5,000 ကျပ်</span>
-            </button>
+            ${weeklyBtn}
+            ${cupBtn}
         </div>
     `;
 }
@@ -128,7 +168,15 @@ function updateFeeCards(d) {
 }
 
 // ── Login Prompt (not logged in) ───────────────────────────────────────────────
-function buildLoginPrompt() {
+function buildLoginPrompt(cfg) {
+    const weeklyOpen = cfg?.weekly_open !== false;
+    const cupOpen    = cfg?.cup_open    !== false;
+    const weeklyText = weeklyOpen
+        ? `Weekly <span style="color:var(--green);font-weight:700;">1,000 ကျပ်</span>`
+        : `Weekly <span style="color:var(--dim);font-weight:700;">🔒 CLOSED</span>`;
+    const cupText = cupOpen
+        ? `Cup <span style="color:var(--green);font-weight:700;">5,000 ကျပ်</span>`
+        : `Cup <span style="color:var(--dim);font-weight:700;">🔒 CLOSED</span>`;
     return `
         <div style="background:var(--card);border:1px solid rgba(0,255,136,0.15);
                     border-radius:14px;padding:14px 16px;margin-bottom:16px;
@@ -144,9 +192,7 @@ function buildLoginPrompt() {
                 <div style="font-family:'Rajdhani',sans-serif;font-weight:800;font-size:0.95rem;
                              color:var(--text);">Fee Status ကြည့်ဖို့ Login ဝင်ပါ</div>
                 <div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;color:var(--dim);margin-top:2px;">
-                    Weekly <span style="color:var(--green);font-weight:700;">1,000 ကျပ်</span>
-                    &nbsp;·&nbsp;
-                    Cup <span style="color:var(--green);font-weight:700;">5,000 ကျပ်</span>
+                    ${weeklyText} &nbsp;·&nbsp; ${cupText}
                 </div>
             </div>
             <button onclick="window.renderAuthUI()" class="primary-btn"
@@ -355,6 +401,18 @@ window.openRegisterModal = async function(type) {
     if (!user) return window.showToast("Login အရင်ဝင်ပါ","error");
     const cfg = FEE[type];
     if (!cfg) return;
+
+    // Double-check registration is still open (prevent button bypass)
+    try {
+        const configDoc = await db.collection("tw_config").doc("settings").get();
+        if (configDoc.exists) {
+            const s = configDoc.data();
+            const field = type === 'weekly' ? 'weekly_open' : 'cup_open';
+            if (s[field] === false) {
+                return window.showToast("Registration ပိတ်ထားသည် 🔒", "error");
+            }
+        }
+    } catch(e) {} // fail open if config unreachable
 
     let userData = {};
     try {
