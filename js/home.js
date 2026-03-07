@@ -111,9 +111,9 @@ function updateFeeCards(d) {
 
 function buildLoginPrompt() {
     return `
-        <div style="background:var(--card);border:1px solid rgba(0,255,136,0.15);
+        <div style="background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.18);
                     border-radius:14px;padding:14px 16px;margin-bottom:16px;
-                    display:flex;align-items:center;gap:12px;">
+                    display:flex;align-items:center;gap:12px;position:relative;overflow:hidden;">
             <div style="width:40px;height:40px;border-radius:50%;flex-shrink:0;
                          background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.2);
                          display:flex;align-items:center;justify-content:center;color:var(--green);">
@@ -130,8 +130,12 @@ function buildLoginPrompt() {
                     Cup <span style="color:var(--green);font-weight:700;">5,000 ကျပ်</span>
                 </div>
             </div>
-            <button onclick="window.renderAuthUI()" class="primary-btn"
-                    style="flex-shrink:0;padding:8px 18px;font-size:0.85rem;border-radius:8px;">
+            <button onclick="window.renderAuthUI()"
+                    style="flex-shrink:0;padding:8px 18px;font-size:0.85rem;border-radius:8px;
+                           background:linear-gradient(135deg,rgba(0,255,136,0.12),rgba(0,180,80,0.06));
+                           border:1px solid rgba(0,255,136,0.28);color:var(--green);cursor:pointer;
+                           font-family:'Rajdhani',sans-serif;font-weight:900;letter-spacing:1px;
+                           white-space:nowrap;">
                 LOGIN
             </button>
         </div>
@@ -176,12 +180,17 @@ function loadMembers(type) {
 
     db.collection("tw_registrations")
         .where("type", "==", t)
-        .orderBy("registered_at", "desc")
         .onSnapshot(snap => {
             const el = document.getElementById('members-list');
             if (!el) return;
 
-            if (snap.empty) {
+            const sortedDocs = snap.docs.slice().sort((a,b) => {
+                const ta = a.data().registered_at?.seconds || 0;
+                const tb = b.data().registered_at?.seconds || 0;
+                return tb - ta;
+            });
+
+            if (!sortedDocs.length) {
                 el.innerHTML = `
                     <div class="glow-card" style="text-align:center; padding:24px; color:var(--dim);">
                         <p style="font-family:'Share Tech Mono',monospace; font-size:0.7rem; letter-spacing:1px;">
@@ -193,7 +202,7 @@ function loadMembers(type) {
 
             const isWeekly = t === 'weekly';
             const color    = isWeekly ? 'var(--green)' : 'var(--gold)';
-            const total    = snap.docs.length;
+            const total    = sortedDocs.length;
 
             el.innerHTML = `
                 <!-- Count badge -->
@@ -209,7 +218,7 @@ function loadMembers(type) {
 
                 <!-- Members cards -->
                 <div style="display:flex; flex-direction:column; gap:8px;">
-                    ${snap.docs.map((doc, i) => {
+                    ${sortedDocs.map((doc, i) => {
                         const d    = doc.data();
                         const time = d.registered_at
                             ? new Date(d.registered_at.seconds * 1000)
