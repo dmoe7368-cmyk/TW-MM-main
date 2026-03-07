@@ -12,9 +12,9 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 
 # ── Firebase Init ─────────────────────────────────────────────────────────────
-cred_json = os.environ.get("FIREBASE_CREDENTIALS")
+cred_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
 if not cred_json:
-    raise ValueError("FIREBASE_CREDENTIALS secret မရှိဘူး")
+    raise ValueError("FIREBASE_SERVICE_ACCOUNT secret မရှိဘူး")
 
 cred = credentials.Certificate(json.loads(cred_json))
 firebase_admin.initialize_app(cred)
