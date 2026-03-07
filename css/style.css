@@ -220,40 +220,6 @@ body::before {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── 12. Bottom Nav ───────────────────────── */
-.bottom-nav {
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 500;
-    height: var(--nav-h);
-    display: flex; align-items: center;
-    background: rgba(4,9,5,0.92);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border-top: 1px solid rgba(0,255,136,0.07);
-    box-shadow: 0 -4px 24px rgba(0,0,0,0.6);
-    padding: 0;
-}
-
-.nav-item {
-    flex: 1; display: flex; flex-direction: column; align-items: center;
-    gap: 3px; padding: 8px 0; cursor: pointer;
-    background: transparent; border: none;
-    -webkit-tap-highlight-color: transparent;
-}
-.nav-icon-wrap {
-    width: 38px; height: 30px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s; color: #444;
-}
-.nav-item.active .nav-icon-wrap {
-    background: rgba(0,255,136,0.12);
-    border: 1px solid rgba(0,255,136,0.22);
-    color: var(--green);
-}
-.nav-label {
-    font-family: 'Rajdhani', sans-serif; font-size: 0.57rem;
-    font-weight: 800; letter-spacing: 0.5px; color: #333; transition: 0.2s;
-}
-.nav-item.active .nav-label { color: var(--green); }
 
 /* ── 13. Modals ───────────────────────────── */
 .modal-overlay {
@@ -321,47 +287,35 @@ body::before {
 .form-input:focus { border-color: rgba(0,255,136,0.35); }
 
 /* ── 16. Fee Cards (home.js uses these) ───── */
-.fee-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.fee-card  {
     border-radius: 14px; padding: 16px 12px; text-align: center;
     background: rgba(0,255,136,0.04); border: 1px solid rgba(0,255,136,0.12);
     backdrop-filter: blur(12px); position: relative; overflow: hidden;
 }
-.fee-card.gold-card {
     background: rgba(212,175,55,0.04); border-color: rgba(212,175,55,0.15);
 }
-.fee-card::after {
     content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
     background: linear-gradient(90deg, transparent, rgba(0,255,136,0.35), transparent);
 }
-.fee-card.gold-card::after {
     background: linear-gradient(90deg, transparent, rgba(212,175,55,0.35), transparent);
 }
 
 /* ── 17. Register Buttons ─────────────────── */
-.reg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.reg-btn  {
     border-radius: 14px; padding: 18px 12px; text-align: center;
     cursor: pointer; border: none; transition: transform 0.15s, box-shadow 0.15s;
     display: flex; flex-direction: column; align-items: center; gap: 3px;
     position: relative; overflow: hidden;
 }
-.reg-btn:active { transform: scale(0.97); }
-.reg-btn-weekly {
     background: linear-gradient(155deg, rgba(0,255,136,0.1), rgba(0,80,30,0.07));
     border: 1px solid rgba(0,255,136,0.22);
     backdrop-filter: blur(12px);
 }
-.reg-btn-cup {
     background: linear-gradient(155deg, rgba(212,175,55,0.09), rgba(80,50,0,0.07));
     border: 1px solid rgba(212,175,55,0.18);
     backdrop-filter: blur(12px);
 }
-.reg-btn::before {
     content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
     background: linear-gradient(90deg, transparent, rgba(0,255,136,0.3), transparent);
 }
-.reg-btn-cup::before {
     background: linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent);
 }
 
@@ -551,12 +505,8 @@ body::before {
                font-size: 1rem; color: var(--text); margin: 3px 0; }
 
 /* ── Register Button Inner Elements ──────── */
-.reg-btn-icon  { font-size: 1.4rem; margin-bottom: 4px; display: block; color: var(--green); }
-.reg-btn-label { font-family: 'Share Tech Mono', monospace; font-size: 0.48rem;
                   letter-spacing: 2px; color: var(--dim); display: block; }
-.reg-btn-name  { font-family: 'Rajdhani', sans-serif; font-weight: 900;
                   font-size: 1.1rem; display: block; color: var(--green); }
-.reg-btn-fee   { font-family: 'Rajdhani', sans-serif; font-size: 0.78rem;
                   display: block; color: var(--dim); margin-top: 2px; }
 
 /* ── Scout Position Button ────────────────── */
@@ -569,3 +519,37 @@ body::before {
 .pos-btn.active, .pos-btn:active {
     background: var(--green); color: #000;
 }
+
+/* ── Register Buttons (original) ─────────── */
+.reg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.reg-btn { position: relative; padding: 18px 12px; border-radius: 14px; border: none; cursor: pointer; overflow: hidden; text-align: center; transition: transform 0.15s; background: none; }
+.reg-btn:active { transform: scale(0.95); }
+.reg-btn.weekly { background: linear-gradient(145deg, #003d1a, #001a0a); box-shadow: 0 4px 18px rgba(0,255,136,0.12); }
+.reg-btn.weekly::before { content: ''; position: absolute; inset: 0; border-radius: 14px; padding: 1.5px; background: linear-gradient(135deg, rgba(0,255,136,0.65), transparent 60%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
+.reg-btn.cup { background: linear-gradient(145deg, #2a1800, #110a00); box-shadow: 0 4px 18px rgba(212,175,55,0.12); }
+.reg-btn.cup::before { content: ''; position: absolute; inset: 0; border-radius: 14px; padding: 1.5px; background: linear-gradient(135deg, rgba(212,175,55,0.65), transparent 60%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
+.reg-btn-icon  { font-size: 1.8rem; display: block; margin-bottom: 5px; }
+.reg-btn-label { font-size: 0.58rem; font-family: 'Share Tech Mono', monospace; letter-spacing: 1.5px; display: block; margin-bottom: 2px; text-transform: uppercase; }
+.reg-btn.weekly .reg-btn-label { color: rgba(0,255,136,0.6); }
+.reg-btn.cup    .reg-btn-label { color: rgba(212,175,55,0.6); }
+.reg-btn-name  { font-size: 1.05rem; font-weight: 900; display: block; font-family: 'Rajdhani', sans-serif; }
+.reg-btn.weekly .reg-btn-name  { color: var(--green); }
+.reg-btn.cup    .reg-btn-name  { color: var(--gold); }
+.reg-btn-fee   { margin-top: 7px; font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; display: block; }
+.reg-btn.weekly .reg-btn-fee   { color: rgba(0,255,136,0.45); }
+.reg-btn.cup    .reg-btn-fee   { color: rgba(212,175,55,0.45); }
+
+/* ── Fee Cards (original) ─────────────────── */
+.fee-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fee-card { border-radius: 14px; padding: 18px 14px; text-align: center; background: var(--card); border: 1px solid var(--border); position: relative; overflow: hidden; }
+.fee-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(0,255,136,0.3), transparent); }
+.fee-card.paid   { border-color: rgba(0,255,136,0.25); background: linear-gradient(145deg, #001a0a, #000f05); }
+.fee-card.unpaid { border-color: rgba(255,77,77,0.2);  background: linear-gradient(145deg, #1a0505, #0a0202); }
+
+/* ── Bottom Nav (original) ────────────────── */
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 500; height: var(--nav-h); display: flex; align-items: center; background: rgba(2,10,4,0.96); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(0,255,136,0.08); box-shadow: 0 -4px 24px rgba(0,0,0,0.6); }
+.nav-item { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; cursor: pointer; color: var(--dim); transition: color 0.2s, transform 0.2s; padding: 0; }
+.nav-item.active { color: var(--green); transform: translateY(-3px); }
+.nav-icon-wrap { width: 40px; height: 34px; border-radius: 10px; border: 1px solid transparent; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+.nav-item.active .nav-icon-wrap { background: rgba(0,255,136,0.1); border-color: rgba(0,255,136,0.25); box-shadow: 0 0 12px rgba(0,255,136,0.15); }
+.nav-label { font-family: 'Share Tech Mono', monospace; font-size: 0.52rem; letter-spacing: 0.5px; }
