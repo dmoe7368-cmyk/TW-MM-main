@@ -23,13 +23,36 @@ news_ref = db.collection("tw_news")
 
 # ── FPL API Fetch ─────────────────────────────────────────────────────────────
 print("FPL API fetch လုပ်နေသည်...")
-resp = requests.get(
+
+# FPL proxy URLs — တစ်ခု မရရင် နောက်တစ်ခု try
+URLS = [
     "https://fantasy.premierleague.com/api/bootstrap-static/",
-    headers={"User-Agent": "Mozilla/5.0 (compatible; TW-MM-Bot/1.0)"},
-    timeout=30
-)
-resp.raise_for_status()
-data  = resp.json()
+    "https://fpl.team/api/bootstrap-static/",
+    "https://fplbot.azurewebsites.net/api/bootstrap-static",
+]
+
+data = None
+for url in URLS:
+    try:
+        print(f"Trying: {url}")
+        r = requests.get(
+            url,
+            headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "Accept": "application/json",
+            },
+            timeout=30
+        )
+        r.raise_for_status()
+        data = r.json()
+        print(f"Success: {url}")
+        break
+    except Exception as e:
+        print(f"Failed {url}: {e}")
+
+if not data:
+    raise RuntimeError("FPL API URLs အားလုံး မရဘူး")
+
 events = data.get("events", [])
 
 # ── Find current & next GW ────────────────────────────────────────────────────
