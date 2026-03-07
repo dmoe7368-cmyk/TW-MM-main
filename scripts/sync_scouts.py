@@ -42,10 +42,10 @@ def get_fpl_base_data():
 
     pos_map    = {1: "GKP", 2: "DEF", 3: "MID", 4: "FWD"}
     current_gw = next(e['id'] for e in r['events'] if e['is_current'])
-    return players, teams, pos_map, current_gw, r  # ✅ raw data ပါ return
+    return players, teams, pos_map, current_gw
 
 def sync_scouts():
-    players_raw, teams_map, pos_map, gw, bootstrap = get_fpl_base_data()
+    players_raw, teams_map, pos_map, gw = get_fpl_base_data()
     print(f"--- 🚀 Syncing Data for Gameweek {gw} ---")
 
     # ── ၁။ League Scout Sync ──────────────────────────────────────────────────
@@ -167,96 +167,6 @@ def sync_scouts():
 
     print("✨ Sync Completed Successfully!")
 
-    # ── News Sync ─────────────────────────────────────────────────────────────
-    sync_news(bootstrap)
-
-def sync_news(data):
-    """bootstrap data ကို သုံးပြီး tw_news ထဲ GW news သိမ်းမယ်"""
-    print("\n--- 📰 Syncing FPL News ---")
-    events   = data.get("events", [])
-    news_ref = db.collection("tw_news")
-
-    current_gw = next((e for e in events if e.get("is_current")), None)
-    next_gw    = next((e for e in events if e.get("is_next")),    None)
-
-    def build_doc(event):
-        gw_id    = event["id"]
-        gw_name  = event.get("name", f"Gameweek {gw_id}")
-        deadline = event.get("deadline_time", "")[:16].replace("T", " ")
-        finished = event.get("finished", False)
-        avg      = event.get("average_entry_score", 0)
-        highest  = event.get("highest_score", 0)
-        chips    = event.get("chip_plays", [])
-        chip_str = "  |  ".join(
-            f"{c['chip_name'].upper()}: {c['num_played']:,}" for c in chips
-        ) if chips else ""
-
-        if finished:
-            title      = f"🏅 {gw_name} — Final Results"
-            body_lines = [f"Highest Score : {highest} pts"]
-            if avg:      body_lines.append(f"Average Score : {avg} pts")
-            if chip_str: body_lines.append(f"Chips Used    : {chip_str}")
-            news_type  = "result"
-        elif event.get("is_current"):
-            title      = f"⚽ {gw_name} — Live Now"
-            body_lines = [f"Deadline : {deadline} UTC"]
-            if avg:      body_lines.append(f"Avg Score (so far) : {avg} pts")
-            if chip_str: body_lines.append(f"Chips : {chip_str}")
-            news_type  = "weekly"
-        else:
-            title      = f"📅 {gw_name} — Coming Up"
-            body_lines = [f"Deadline : {deadline} UTC", "Team ပြင်ဆင်ဖို့ မမေ့ပါနဲ့! ✊"]
-            news_type  = "weekly"
-
-        return {
-            "title"      : title,
-            "body"       : "\n".join(body_lines),
-            "type"       : news_type,
-            "author"     : "FPL Official",
-            "created_at" : firestore.SERVER_TIMESTAMP,
-            "gw_id"      : gw_id,
-            "finished"   : finished,
-            "source"     : "fpl_api",
-        }
-
-    for event in [e for e in [current_gw, next_gw] if e]:
-        doc_id = f"fpl_gw_{event['id']}"
-        news_ref.document(doc_id).set(build_doc(event), merge=True)
-        print(f"✅ News saved: {doc_id}")
-
-    # Injury news
-    injured = [p for p in data.get("elements", []) if len(p.get("news", "")) > 10]
-    if injured:
-        lines = []
-        for p in injured[:15]:
-            chance = p.get("chance_of_playing_next_round")
-            flag   = "🔴" if chance == 0 else "🟡" if chance and chance < 75 else "⚠️"
-            name   = f"{p.get('first_name','')} {p.get('second_name','')}".strip()
-            lines.append(f"{flag} {name}: {p['news']}")
-        news_ref.document("fpl_injuries_latest").set({
-            "title"      : "🏥 Player Injury & Availability",
-            "body"       : "\n".join(lines),
-            "type"       : "announcement",
-            "author"     : "FPL Official",
-            "created_at" : firestore.SERVER_TIMESTAMP,
-            "gw_id"      : current_gw["id"] if current_gw else 0,
-            "finished"   : False,
-            "source"     : "fpl_api",
-        }, merge=True)
-        print(f"✅ Injury news saved — {len(injured)} players")
-
-    # Cleanup: latest 5 GW ထား၊ finished တွေ delete
-    gw_docs = sorted(
-        [d for d in news_ref.stream() if d.id.startswith("fpl_gw_")],
-        key=lambda d: d.to_dict().get("gw_id", 0), reverse=True
-    )
-    for i, doc in enumerate(gw_docs):
-        d = doc.to_dict()
-        if i >= 5 and d.get("finished", False):
-            doc.reference.delete()
-            print(f"🗑️  Deleted old news: {doc.id}")
-
-    print("✅ News sync done!")
-
 if __name__ == "__main__":
     sync_scouts()
+    
