@@ -531,13 +531,14 @@ body::before {
 
 /* ── Register Buttons (original) ─────────── */
 .reg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.reg-btn { position: relative; padding: 18px 12px; border-radius: 14px; border: none; cursor: pointer; overflow: hidden; text-align: center; transition: transform 0.15s; background: none; }
+.reg-btn { position: relative; padding: 18px 12px; border-radius: 14px; border: none; cursor: pointer; overflow: hidden; text-align: center; transition: transform 0.15s; background: none; width: 100%; display: flex; flex-direction: column; align-items: center; }
 .reg-btn:active { transform: scale(0.95); }
-.reg-btn.weekly { background: linear-gradient(145deg, #003d1a, #001a0a); box-shadow: 0 4px 18px rgba(0,255,136,0.12); }
+.reg-btn.weekly { background: linear-gradient(145deg, #004d22, #002810) !important; border: 1px solid rgba(0,255,136,0.3); box-shadow: 0 4px 18px rgba(0,255,136,0.12); }
 .reg-btn.weekly::before { content: ''; position: absolute; inset: 0; border-radius: 14px; padding: 1.5px; background: linear-gradient(135deg, rgba(0,255,136,0.65), transparent 60%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
-.reg-btn.cup { background: linear-gradient(145deg, #2a1800, #110a00); box-shadow: 0 4px 18px rgba(212,175,55,0.12); }
+.reg-btn.cup { background: linear-gradient(145deg, #332000, #1a1000) !important; border: 1px solid rgba(212,175,55,0.3); box-shadow: 0 4px 18px rgba(212,175,55,0.12); }
 .reg-btn.cup::before { content: ''; position: absolute; inset: 0; border-radius: 14px; padding: 1.5px; background: linear-gradient(135deg, rgba(212,175,55,0.65), transparent 60%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
-.reg-btn-icon  { font-size: 1.8rem; display: block; margin-bottom: 5px; }
+.reg-btn-icon  { font-size: 1.8rem; display: block; margin-bottom: 5px; color: var(--green); }
+.reg-btn.cup .reg-btn-icon { color: var(--gold); }
 .reg-btn-label { font-size: 0.58rem; font-family: 'Share Tech Mono', monospace; letter-spacing: 1.5px; display: block; margin-bottom: 2px; text-transform: uppercase; }
 .reg-btn.weekly .reg-btn-label { color: rgba(0,255,136,0.6); }
 .reg-btn.cup    .reg-btn-label { color: rgba(212,175,55,0.6); }
