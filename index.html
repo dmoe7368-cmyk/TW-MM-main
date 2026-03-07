@@ -21,14 +21,14 @@
 
     <!-- Header -->
     <header class="app-header">
-        <div class="logo-badge">
+        <div style="display:flex;align-items:center;gap:10px;">
             <div class="logo-icon">⚽</div>
-            <div class="logo-text">
-                <span class="logo-main">TW MM</span>
-                <span class="logo-sub">TOURNAMENT · FPL</span>
+            <div style="display:flex;flex-direction:column;line-height:1;">
+                <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.05rem;color:var(--green);letter-spacing:1px;">TW MM</span>
+                <span style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;color:var(--dim);letter-spacing:2px;margin-top:2px;">TOURNAMENT · FPL</span>
             </div>
         </div>
-        <div id="auth-root" class="auth-container"></div>
+        <div id="auth-root" style="display:flex;align-items:center;gap:8px;"></div>
     </header>
 
     <!-- Main Content -->
@@ -77,6 +77,16 @@
                 </svg>
             </div>
             <span class="nav-label">Live Hub</span>
+        </button>
+        <button id="btn-community" class="nav-item" onclick="showTab('community')">
+            <div class="nav-icon-wrap">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                </svg>
+            </div>
+            <span class="nav-label">Community</span>
         </button>
     </nav>
 
