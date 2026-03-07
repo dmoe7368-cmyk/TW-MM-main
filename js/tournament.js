@@ -119,21 +119,15 @@ window.filterDivision = function(divName) {
         <table style="width:100%;border-collapse:collapse;min-width:${130 + gwCols.length*58}px;">
             <thead>
                 <tr style="background:var(--card2);position:sticky;top:0;z-index:4;">
-                    <th style="padding:10px 10px;text-align:left;
+                    <th style="padding:14px 14px;text-align:left;
                                position:sticky;left:0;top:0;
                                background:var(--card2);z-index:5;
                                border-right:1px solid var(--border);
-                               border-bottom:2px solid var(--green);min-width:110px;max-width:110px;">
-                        <span style="font-family:'Rajdhani',sans-serif;font-size:0.8rem;
-                                      font-weight:900;color:var(--green);letter-spacing:1px;">TEAM</span>
-                    </th>
-                    <th style="padding:10px 8px;text-align:left;
-                               position:sticky;left:110px;top:0;
-                               background:var(--card2);z-index:5;
-                               border-right:1px solid var(--border);
-                               border-bottom:2px solid var(--border);min-width:90px;max-width:90px;">
-                        <span style="font-family:'Rajdhani',sans-serif;font-size:0.8rem;
-                                      font-weight:700;color:var(--dim);letter-spacing:1px;">MANAGER</span>
+                               border-bottom:2px solid var(--green);min-width:130px;">
+                        <span style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;
+                                      font-weight:900;color:var(--green);letter-spacing:1px;">
+                            TEAM / MANAGER
+                        </span>
                     </th>
                     ${gwCols.map(w => `
                     <th style="padding:12px 6px;text-align:center;
