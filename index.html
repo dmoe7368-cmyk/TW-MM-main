@@ -12,7 +12,7 @@
     <link rel="apple-touch-icon" href="icon-192.png">
 
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;900&family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;600;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -21,10 +21,10 @@
 
     <!-- Header -->
     <header class="app-header">
-        <div class="logo-badge">
+        <div class="logo-left">
             <div class="logo-icon">⚽</div>
-            <div class="logo-text">
-                <span class="logo-main">TW MM</span>
+            <div class="logo-text-block">
+                <span class="logo-title">TW MM</span>
                 <span class="logo-sub">Tournament · Gold</span>
             </div>
         </div>
@@ -65,6 +65,7 @@
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="7"/>
                     <path d="M21 21l-4.35-4.35"/>
+                    <path d="M11 8v3l2 2"/>
                 </svg>
             </div>
             <span class="nav-label">Scouts</span>
@@ -77,14 +78,9 @@
             </div>
             <span class="nav-label">Live Hub</span>
         </button>
-        <button id="btn-community" class="nav-item" onclick="showTab('community')">
+            <button id="btn-community" class="nav-item" onclick="showTab('community')">
             <div class="nav-icon-wrap">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <path d="M23 21v-2a4 4 0 00-3-3.87"/>
-                    <path d="M16 3.13a4 4 0 010 7.75"/>
-                </svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
             </div>
             <span class="nav-label">Community</span>
         </button>
@@ -127,14 +123,14 @@
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-auth-compat.js"></script>
 
     <!-- App Scripts v3 -->
-    <script src="js/config.js?v=3"></script>
-    <script src="js/auth.js?v=3"></script>
-    <script src="js/home.js?v=3"></script>
-    <script src="js/community.js?v=3"></script>
-    <script src="js/tournament.js?v=3"></script>
-    <script src="js/scout.js?v=3"></script>
-    <script src="js/live-hub.js?v=3"></script>
-    <script src="js/app.js?v=3"></script>
+    <script src="js/config.js?v=4"></script>
+    <script src="js/auth.js?v=4"></script>
+    <script src="js/home.js?v=4"></script>
+    <script src="js/community.js?v=4"></script>
+    <script src="js/tournament.js?v=4"></script>
+    <script src="js/scout.js?v=4"></script>
+    <script src="js/live-hub.js?v=4"></script>
+    <script src="js/app.js?v=4"></script>
 
 </body>
 </html>
