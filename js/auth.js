@@ -50,8 +50,11 @@ firebase.auth().onAuthStateChanged(async (user) => {
             }
 
             authRoot.innerHTML = `
-                <div class="coin-badge">🪙 <span id="header-coins">${coins}</span></div>
-                <div onclick="window.openProfile()" class="user-pill">⚽ ${managerName}</div>
+                <div class="header-combined-pill" onclick="window.openProfile()">
+                    <span class="hcp-coin">🪙 <span id="header-coins">${coins}</span></span>
+                    <span class="hcp-divider"></span>
+                    <span class="hcp-name">⚽ ${managerName}</span>
+                </div>
             `;
         } catch (e) {
             console.error("Profile load error:", e);
