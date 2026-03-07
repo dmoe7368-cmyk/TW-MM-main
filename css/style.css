@@ -39,7 +39,8 @@ body {
     font-family: 'Barlow Condensed', 'Segoe UI', system-ui, sans-serif;
     min-height: 100%;
     overflow-x: hidden;
-    padding-bottom: var(--nav-h);
+    overflow-y: hidden;
+    height: 100%;
 }
 
 /* noise overlay */
@@ -108,7 +109,15 @@ body::before {
 }
 
 /* ── 4. Main Root ─────────────────────────── */
-#main-root { position: relative; z-index: 1; }
+#main-root {
+    position: fixed;
+    top: 56px;
+    bottom: var(--nav-h);
+    left: 0; right: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    z-index: 1;
+}
 
 /* ── 5. Section Title ─────────────────────── */
 .section-title {
