@@ -26,8 +26,27 @@ LEAGUES = {
     "League_B": "184965"
 }
 
+# vastaav cached bootstrap — FPL block bypass အတွက်
+BOOTSTRAP_SOURCES = [
+    "https://raw.githubusercontent.com/vastaav/fantasy-premier-league/master/data/2024-25/bootstrap-static.json",
+    f"{FPL_API}bootstrap-static/",
+]
+
+def fetch_bootstrap():
+    for url in BOOTSTRAP_SOURCES:
+        try:
+            r = requests.get(url, timeout=15)
+            r.raise_for_status()
+            data = r.json()
+            if data.get("events") and data.get("elements"):
+                print(f"✅ Bootstrap from: {url[:60]}")
+                return data
+        except Exception as e:
+            print(f"⚠️ Bootstrap failed {url[:50]}: {e}")
+    raise RuntimeError("Bootstrap sources အားလုံး မရဘူး")
+
 def get_fpl_base_data():
-    r = requests.get(f"{FPL_API}bootstrap-static/").json()
+    r = fetch_bootstrap()
     players = {p['id']: p for p in r['elements']}
 
     # ✅ team_code ပါအောင် teams map ထဲ ထည့်မယ်
@@ -169,4 +188,3 @@ def sync_scouts():
 
 if __name__ == "__main__":
     sync_scouts()
-    
