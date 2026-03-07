@@ -1,68 +1,48 @@
 """
-sync_fpl_news.py
-- GW အလိုက် 1 document စီ သိမ်းမယ်
-- GW ပြောင်းမှ အသစ် ဝင်၊ finished GW တွေ delete မယ်
-- Latest 5 GW documents ပဲ ထားမယ်
+sync_fpl_news.py — FPL News Sync
+GW အလိုက် tw_news collection ထဲ သိမ်းမယ်
 """
 
 import os
 import json
+import time
 import requests
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-# ── Firebase Init ─────────────────────────────────────────────────────────────
-cred_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
-if not cred_json:
-    raise ValueError("FIREBASE_SERVICE_ACCOUNT secret မရှိဘူး")
+# ── Firebase Init (working script pattern) ───────────────────────────────────
+def initialize_firebase():
+    if not firebase_admin._apps:
+        service_account_info = os.environ.get('FIREBASE_SERVICE_ACCOUNT')
+        if service_account_info:
+            cred = credentials.Certificate(json.loads(service_account_info))
+        else:
+            import pathlib
+            cred = credentials.Certificate(
+                pathlib.Path(__file__).parent / 'serviceAccountKey.json'
+            )
+        firebase_admin.initialize_app(cred)
+    return firestore.client()
 
-cred = credentials.Certificate(json.loads(cred_json))
-firebase_admin.initialize_app(cred)
-db = firestore.client()
+db       = initialize_firebase()
 news_ref = db.collection("tw_news")
 
-# ── FPL API Fetch ─────────────────────────────────────────────────────────────
+# ── FPL API Fetch (working script pattern — no extra headers) ─────────────────
+FPL_API = "https://fantasy.premierleague.com/api/"
+
 print("FPL API fetch လုပ်နေသည်...")
-
-# FPL proxy URLs — တစ်ခု မရရင် နောက်တစ်ခု try
-URLS = [
-    "https://fantasy.premierleague.com/api/bootstrap-static/",
-    "https://fpl.team/api/bootstrap-static/",
-    "https://fplbot.azurewebsites.net/api/bootstrap-static",
-]
-
-data = None
-for url in URLS:
-    try:
-        print(f"Trying: {url}")
-        r = requests.get(
-            url,
-            headers={
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-                "Accept": "application/json",
-            },
-            timeout=30
-        )
-        r.raise_for_status()
-        data = r.json()
-        print(f"Success: {url}")
-        break
-    except Exception as e:
-        print(f"Failed {url}: {e}")
-
-if not data:
-    raise RuntimeError("FPL API URLs အားလုံး မရဘူး")
-
+data = requests.get(f"{FPL_API}bootstrap-static/").json()
 events = data.get("events", [])
+print(f"Events loaded: {len(events)}")
 
-# ── Find current & next GW ────────────────────────────────────────────────────
+# ── Current & Next GW ─────────────────────────────────────────────────────────
 current_gw = next((e for e in events if e.get("is_current")), None)
 next_gw    = next((e for e in events if e.get("is_next")),    None)
 
 print(f"Current GW : {current_gw['id'] if current_gw else 'None'}")
 print(f"Next GW    : {next_gw['id']    if next_gw    else 'None'}")
 
-# ── Helper ────────────────────────────────────────────────────────────────────
+# ── Build doc ─────────────────────────────────────────────────────────────────
 def build_doc(event):
     gw_id    = event["id"]
     gw_name  = event.get("name", f"Gameweek {gw_id}")
@@ -81,14 +61,12 @@ def build_doc(event):
         if avg:      body_lines.append(f"Average Score : {avg} pts")
         if chip_str: body_lines.append(f"Chips Used    : {chip_str}")
         news_type  = "result"
-
     elif event.get("is_current"):
         title      = f"⚽ {gw_name} — Live Now"
         body_lines = [f"Deadline : {deadline} UTC"]
         if avg:      body_lines.append(f"Avg Score (so far) : {avg} pts")
         if chip_str: body_lines.append(f"Chips : {chip_str}")
         news_type  = "weekly"
-
     else:
         title      = f"📅 {gw_name} — Coming Up"
         body_lines = [f"Deadline : {deadline} UTC", "Team ပြင်ဆင်ဖို့ မမေ့ပါနဲ့! ✊"]
@@ -105,15 +83,15 @@ def build_doc(event):
         "source"     : "fpl_api",
     }
 
-# ── Save current & next GW ────────────────────────────────────────────────────
+# ── Save GW docs ──────────────────────────────────────────────────────────────
 for event in [e for e in [current_gw, next_gw] if e]:
     doc_id = f"fpl_gw_{event['id']}"
     doc    = build_doc(event)
     news_ref.document(doc_id).set(doc, merge=True)
-    print(f"Saved : {doc_id} — {doc['title']}")
+    print(f"✅ Saved : {doc_id} — {doc['title']}")
 
 # ── Injury News ───────────────────────────────────────────────────────────────
-injured = [p for p in data.get("elements", []) if len(p.get("news","")) > 10]
+injured = [p for p in data.get("elements", []) if len(p.get("news", "")) > 10]
 
 if injured:
     lines = []
@@ -133,31 +111,24 @@ if injured:
         "finished"   : False,
         "source"     : "fpl_api",
     }, merge=True)
-    print(f"Saved injury news — {len(injured)} players")
+    print(f"✅ Saved injury news — {len(injured)} players")
 
-# ── Cleanup ───────────────────────────────────────────────────────────────────
-# Rule: fpl_gw_ docs → finished ဖြစ်ပြီး latest 5 ကျော်ရင် delete
+# ── Cleanup: latest 5 GW ထား၊ finished တွေ delete ───────────────────────────
 print("\nCleanup...")
-
 gw_docs = sorted(
     [d for d in news_ref.stream() if d.id.startswith("fpl_gw_")],
     key=lambda d: d.to_dict().get("gw_id", 0),
-    reverse=True   # newest first
+    reverse=True
 )
-
-print(f"GW docs total: {len(gw_docs)}")
 KEEP = 5
-
 for i, doc in enumerate(gw_docs):
     d        = doc.to_dict()
     gw_id    = d.get("gw_id", 0)
     finished = d.get("finished", False)
-
     if i >= KEEP and finished:
         doc.reference.delete()
-        print(f"Deleted : {doc.id} (GW{gw_id})")
+        print(f"🗑️  Deleted : {doc.id} (GW{gw_id})")
     else:
-        status = "finished" if finished else "active"
-        print(f"Kept    : {doc.id} (GW{gw_id} · {status})")
+        print(f"✅ Kept    : {doc.id} (GW{gw_id} · {'finished' if finished else 'active'})")
 
-print("\nFPL News sync complete!")
+print("\n✨ FPL News sync complete!")
