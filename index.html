@@ -12,7 +12,7 @@
     <link rel="apple-touch-icon" href="icon-192.png">
 
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;900&family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;600;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -21,11 +21,11 @@
 
     <!-- Header -->
     <header class="app-header">
-        <div class="logo-left">
+        <div class="logo-badge">
             <div class="logo-icon">⚽</div>
-            <div class="logo-text-block">
-                <span class="logo-title">TW MM</span>
-                <span class="logo-sub">Tournament · Gold</span>
+            <div class="logo-text">
+                <span class="logo-main">TW MM</span>
+                <span class="logo-sub">TOURNAMENT · FPL</span>
             </div>
         </div>
         <div id="auth-root" class="auth-container"></div>
@@ -43,7 +43,7 @@
     <nav class="bottom-nav">
         <button id="btn-home" class="nav-item" onclick="showTab('home')">
             <div class="nav-icon-wrap">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
                     <path d="M9 21V12h6v9"/>
                 </svg>
@@ -52,7 +52,7 @@
         </button>
         <button id="btn-leagues" class="nav-item" onclick="showTab('leagues')">
             <div class="nav-icon-wrap">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M8 21h8M12 21v-5"/>
                     <path d="M5 3h14v7a7 7 0 01-14 0V3z"/>
                     <path d="M5 7H2a5 5 0 004 4.9M19 7h3a5 5 0 01-4 4.9"/>
@@ -62,7 +62,7 @@
         </button>
         <button id="btn-scout" class="nav-item" onclick="showTab('scout')">
             <div class="nav-icon-wrap">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="7"/>
                     <path d="M21 21l-4.35-4.35"/>
                     <path d="M11 8v3l2 2"/>
@@ -72,17 +72,11 @@
         </button>
         <button id="btn-live" class="nav-item" onclick="showTab('live')">
             <div class="nav-icon-wrap">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
                 </svg>
             </div>
             <span class="nav-label">Live Hub</span>
-        </button>
-            <button id="btn-community" class="nav-item" onclick="showTab('community')">
-            <div class="nav-icon-wrap">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-            </div>
-            <span class="nav-label">Community</span>
         </button>
     </nav>
 
