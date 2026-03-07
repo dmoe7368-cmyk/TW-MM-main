@@ -64,6 +64,14 @@ body::before {
 
 .logo-left { display: flex; align-items: center; gap: 10px; }
 
+/* alias — keep backward compat with index.html */
+.logo-badge  { display: flex; align-items: center; gap: 10px; }
+.logo-text   { display: flex; flex-direction: column; line-height: 1; }
+.logo-main   { font-family: 'Rajdhani', sans-serif; font-weight: 900;
+               font-size: 1.05rem; color: var(--green); letter-spacing: 1px; line-height: 1; }
+.auth-container { display: flex; align-items: center; gap: 8px; }
+
+
 .logo-icon {
     width: 34px; height: 34px; border-radius: 9px; font-size: 1.1rem;
     background: linear-gradient(135deg, #004d20, #001a08);
