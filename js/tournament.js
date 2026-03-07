@@ -116,18 +116,24 @@ window.filterDivision = function(divName) {
         const medals = ['🥇','🥈','🥉'];
 
         let html = `
-        <table style="width:100%;border-collapse:collapse;min-width:${130 + gwCols.length*58}px;">
+        <table style="width:100%;border-collapse:collapse;min-width:${150 + gwCols.length*52}px;">
             <thead>
-                <tr style="background:var(--card2);position:sticky;top:0;z-index:4;">
-                    <th style="padding:14px 14px;text-align:left;
+                <tr style="background:#0c1a0e;position:sticky;top:0;z-index:4;">
+                    <th style="padding:10px 10px;text-align:left;
                                position:sticky;left:0;top:0;
-                               background:var(--card2);z-index:5;
+                               background:#0c1a0e;z-index:5;
                                border-right:1px solid var(--border);
-                               border-bottom:2px solid var(--green);min-width:130px;">
-                        <span style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;
-                                      font-weight:900;color:var(--green);letter-spacing:1px;">
-                            TEAM / MANAGER
-                        </span>
+                               border-bottom:2px solid var(--green);min-width:110px;max-width:110px;">
+                        <span style="font-family:'Rajdhani',sans-serif;font-size:0.8rem;
+                                      font-weight:900;color:var(--green);letter-spacing:1px;">TEAM</span>
+                    </th>
+                    <th style="padding:10px 8px;text-align:left;
+                               position:sticky;left:110px;top:0;
+                               background:#0c1a0e;z-index:5;
+                               border-right:1px solid var(--border);
+                               border-bottom:2px solid var(--border);min-width:90px;max-width:90px;">
+                        <span style="font-family:'Rajdhani',sans-serif;font-size:0.8rem;
+                                      font-weight:700;color:var(--dim);letter-spacing:1px;">MANAGER</span>
                     </th>
                     ${gwCols.map(w => `
                     <th style="padding:12px 6px;text-align:center;
@@ -149,18 +155,21 @@ window.filterDivision = function(divName) {
         players.forEach((p, i) => {
             const pos     = i + 1;
             const isTop3  = pos <= 3;
-            const rowBg   = i%2===0 ? 'var(--card)' : 'var(--card2)';
+            const rowBg   = i%2===0 ? '#0a150c' : '#0d1a0f';
             const nameCls = isTop3  ? 'var(--green)' : 'var(--text)';
 
             html += `
             <tr style="border-bottom:1px solid var(--border);background:${rowBg};">
-                <td style="padding:12px 14px;text-align:left;position:sticky;left:0;
-                           background:${rowBg};z-index:2;border-right:1px solid var(--border);min-width:130px;">
-                    <div style="font-weight:900;color:${nameCls};font-family:'Rajdhani',sans-serif;font-size:1rem;">
-                        ${isTop3 ? medals[i] : pos+'.'} ${p.team||'Unknown'}
+                <td style="padding:10px 14px;text-align:left;position:sticky;left:0;
+                           background:${rowBg};z-index:2;
+                           border-right:1px solid var(--border);
+                           min-width:150px;max-width:150px;overflow:hidden;">
+                    <div style="font-weight:900;color:${nameCls};font-family:'Rajdhani',sans-serif;
+                                font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                        ${isTop3 ? medals[i]+' ' : pos+'. '}${p.team||'Unknown'}
                     </div>
-                    <div style="font-size:0.75rem;color:var(--dim);font-family:'Rajdhani',sans-serif;
-                                margin-top:3px;font-weight:600;">
+                    <div style="font-size:0.72rem;color:var(--dim);font-family:'Rajdhani',sans-serif;
+                                font-weight:600;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
                         ${p.name||'Manager'}
                     </div>
                 </td>
