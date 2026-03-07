@@ -116,37 +116,31 @@ window.filterDivision = function(divName) {
         const medals = ['🥇','🥈','🥉'];
 
         let html = `
-        <table style="width:100%;border-collapse:collapse;min-width:${150 + gwCols.length*52}px;">
+        <table style="width:100%;border-collapse:collapse;min-width:${160 + gwCols.length*52}px;">
             <thead>
                 <tr style="background:#0c1a0e;position:sticky;top:0;z-index:4;">
-                    <th style="padding:10px 10px;text-align:left;
+                    <th style="padding:10px 12px;text-align:left;
                                position:sticky;left:0;top:0;
                                background:#0c1a0e;z-index:5;
-                               border-right:1px solid var(--border);
-                               border-bottom:2px solid var(--green);min-width:110px;max-width:110px;">
-                        <span style="font-family:'Rajdhani',sans-serif;font-size:0.8rem;
-                                      font-weight:900;color:var(--green);letter-spacing:1px;">TEAM</span>
-                    </th>
-                    <th style="padding:10px 8px;text-align:left;
-                               position:sticky;left:110px;top:0;
-                               background:#0c1a0e;z-index:5;
-                               border-right:1px solid var(--border);
-                               border-bottom:2px solid var(--border);min-width:90px;max-width:90px;">
-                        <span style="font-family:'Rajdhani',sans-serif;font-size:0.8rem;
-                                      font-weight:700;color:var(--dim);letter-spacing:1px;">MANAGER</span>
+                               border-right:1px solid rgba(0,255,136,0.1);
+                               border-bottom:2px solid var(--green);min-width:160px;">
+                        <span style="font-family:'Rajdhani',sans-serif;font-size:0.82rem;
+                                      font-weight:900;color:var(--green);letter-spacing:1px;">TEAM / MANAGER</span>
                     </th>
                     ${gwCols.map(w => `
-                    <th style="padding:12px 6px;text-align:center;
-                               background:var(--card2);
-                               border-bottom:2px solid var(--border);min-width:48px;">
-                        <span style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;
+                    <th style="padding:10px 6px;text-align:center;
+                               background:#0c1a0e;
+                               border-bottom:2px solid rgba(0,255,136,0.12);min-width:48px;">
+                        <span style="font-family:'Rajdhani',sans-serif;font-size:0.8rem;
                                       font-weight:700;color:var(--dim);">W${w}</span>
                     </th>`).join('')}
-                    <th style="padding:12px 10px;text-align:center;
-                               background:var(--card2);
-                               border-bottom:2px solid var(--green);">
-                        <span style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;
-                                      font-weight:900;color:var(--green);">TOTAL</span>
+                    <th style="padding:10px 10px;text-align:center;
+                               position:sticky;right:0;top:0;
+                               background:#0c1a0e;z-index:5;
+                               border-left:1px solid rgba(0,255,136,0.15);
+                               border-bottom:2px solid var(--green);min-width:58px;">
+                        <span style="font-family:'Rajdhani',sans-serif;font-size:0.82rem;
+                                      font-weight:900;color:var(--green);">TOT</span>
                     </th>
                 </tr>
             </thead>
@@ -160,26 +154,28 @@ window.filterDivision = function(divName) {
 
             html += `
             <tr style="border-bottom:1px solid var(--border);background:${rowBg};">
-                <td style="padding:10px 14px;text-align:left;position:sticky;left:0;
+                <td style="padding:10px 12px;text-align:left;position:sticky;left:0;
                            background:${rowBg};z-index:2;
-                           border-right:1px solid var(--border);
-                           min-width:150px;max-width:150px;overflow:hidden;">
+                           border-right:1px solid rgba(0,255,136,0.1);
+                           min-width:160px;max-width:160px;overflow:hidden;">
                     <div style="font-weight:900;color:${nameCls};font-family:'Rajdhani',sans-serif;
-                                font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                font-size:0.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;">
                         ${isTop3 ? medals[i]+' ' : pos+'. '}${p.team||'Unknown'}
                     </div>
-                    <div style="font-size:0.72rem;color:var(--dim);font-family:'Rajdhani',sans-serif;
+                    <div style="font-size:0.7rem;color:var(--dim);font-family:'Rajdhani',sans-serif;
                                 font-weight:600;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
                         ${p.name||'Manager'}
                     </div>
                 </td>
                 ${gwCols.map(w => `
-                <td style="padding:5px 4px;text-align:center;">
+                <td style="padding:8px 4px;text-align:center;background:${rowBg};">
                     ${renderPointCell(p[`gw_${w}_pts`], p[`gw_${w}_hit`], p[`gw_${w}_chip`])}
                 </td>`).join('')}
-                <td style="padding:10px 10px;text-align:center;font-weight:900;color:var(--green);
-                           background:rgba(0,255,136,0.05);font-size:1.05rem;
-                           border-left:1px solid var(--border);font-family:'Rajdhani',sans-serif;">
+                <td style="padding:10px 8px;text-align:center;font-weight:900;color:var(--green);
+                           position:sticky;right:0;background:${rowBg === '#0a150c' ? '#0d1f10' : '#0f2212'};
+                           z-index:2;font-size:1rem;
+                           border-left:1px solid rgba(0,255,136,0.15);font-family:'Rajdhani',sans-serif;
+                           box-shadow:-2px 0 8px rgba(0,0,0,0.4);">
                     ${p.total_net||0}
                 </td>
             </tr>`;
