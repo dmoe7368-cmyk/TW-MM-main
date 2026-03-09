@@ -3,13 +3,17 @@
  */
 
 function renderPointCell(pts, hit, chip) {
-    let tags = '';
+    var tags = '';
     if (hit && hit > 0)
-        tags += '<div style="color:#f87171;font-size:0.58rem;font-weight:700;margin-top:1px;">-' + hit + '</div>';
+        tags += '<div style="color:#f87171;font-size:0.55rem;font-weight:700;margin-top:1px;line-height:1;">-' + hit + '</div>';
     if (chip === '3xc')
-        tags += '<div style="background:#facc15;color:#000;font-size:0.5rem;padding:1px 4px;border-radius:3px;font-weight:900;margin-top:2px;display:inline-block;">TC</div>';
+        tags += '<div style="background:#facc15;color:#000;font-size:0.48rem;padding:1px 3px;border-radius:2px;font-weight:900;margin-top:1px;display:inline-block;line-height:1.3;">TC</div>';
     else if (chip === 'bboost')
-        tags += '<div style="background:#a78bfa;color:#000;font-size:0.5rem;padding:1px 4px;border-radius:3px;font-weight:900;margin-top:2px;display:inline-block;">BB</div>';
+        tags += '<div style="background:#a78bfa;color:#000;font-size:0.48rem;padding:1px 3px;border-radius:2px;font-weight:900;margin-top:1px;display:inline-block;line-height:1.3;">BB</div>';
+    else if (chip === 'freehit')
+        tags += '<div style="background:#7dd8ff;color:#000;font-size:0.48rem;padding:1px 3px;border-radius:2px;font-weight:900;margin-top:1px;display:inline-block;line-height:1.3;">FH</div>';
+    else if (chip === 'wildcard')
+        tags += '<div style="background:#c4a0ff;color:#000;font-size:0.48rem;padding:1px 3px;border-radius:2px;font-weight:900;margin-top:1px;display:inline-block;line-height:1.3;">WC</div>';
     return '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:38px;">'
          + '<span style="color:#ffffff;font-weight:700;font-size:0.85rem;">' + (pts || 0) + '</span>' + tags
          + '</div>';
