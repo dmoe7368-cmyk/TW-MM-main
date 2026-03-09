@@ -16,9 +16,9 @@ function renderPointCell(pts, hit, chip) {
     </div>`;
 }
 
-function rowBg(i) {
-    return i % 2 === 0 ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.055)';
-}
+function rowBg(i)    { return i % 2 === 0 ? '#0d0020' : '#120028'; }
+function stickyL(i)  { return i % 2 === 0 ? '#0d0020' : '#120028'; }
+function stickyR(i)  { return i % 2 === 0 ? '#100022' : '#14002c'; }
 
 function rankColor(pos) {
     if (pos === 1) return '#fbbf24';
@@ -170,8 +170,8 @@ window.filterDivision = function (divName) {
                 html += `
                 <tr style="border-bottom:1px solid rgba(255,255,255,0.045);background:${rBg};">
                     <td style="padding:9px 10px;text-align:left;position:sticky;left:0;z-index:2;
-                               background:${rBg};${lBorder}
-                               border-right:1px solid rgba(255,255,255,0.06);
+                               background:${stickyL(i)};${lBorder}
+                               border-right:1px solid rgba(255,255,255,0.08);
                                min-width:145px;max-width:145px;overflow:hidden;">
                         <div style="font-weight:800;color:${nColor};font-family:'Rajdhani',sans-serif;
                                     font-size:0.84rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;">
@@ -189,8 +189,8 @@ window.filterDivision = function (divName) {
                     <td style="padding:9px 7px;text-align:center;font-weight:900;
                                color:${nColor};font-size:0.95rem;
                                position:sticky;right:0;z-index:2;
-                               background:${rBg};
-                               border-left:1px solid rgba(255,255,255,0.06);
+                               background:${stickyR(i)};
+                               border-left:1px solid rgba(255,255,255,0.08);
                                font-family:'Barlow Condensed',sans-serif;
                                box-shadow:-2px 0 10px rgba(0,0,0,0.5);">
                         ${p.total_net || 0}
