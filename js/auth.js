@@ -50,8 +50,11 @@ firebase.auth().onAuthStateChanged(async (user) => {
             }
 
             authRoot.innerHTML = `
-                <div class="coin-badge">🪙 <span id="header-coins">${coins}</span></div>
-                <div onclick="window.openProfile()" class="user-pill">⚽ ${managerName}</div>
+                <div class="header-combined-pill" onclick="window.openProfile()">
+                    <span class="hcp-coin">🪙 <span id="header-coins">${coins}</span></span>
+                    <span class="hcp-divider"></span>
+                    <span class="hcp-name">⚽ ${managerName}</span>
+                </div>
             `;
         } catch (e) {
             console.error("Profile load error:", e);
@@ -60,8 +63,8 @@ firebase.auth().onAuthStateChanged(async (user) => {
         // Logged out — LOGIN button
         authRoot.innerHTML = `
             <button onclick="window.renderAuthUI()"
-                style="background:transparent; border:1px solid var(--green);
-                       color:var(--green); padding:6px 16px; border-radius:20px;
+                style="background:transparent; border:1px solid var(--cyan);
+                       color:var(--cyan); padding:6px 16px; border-radius:20px;
                        font-family:'Rajdhani',sans-serif; font-weight:700;
                        font-size:0.8rem; cursor:pointer; letter-spacing:1px;">
                 LOGIN
@@ -88,7 +91,7 @@ window.renderAuthUI = function() {
     modal.id = 'auth-modal';
     modal.style.cssText = `
         position: fixed; inset: 0; z-index: 4000;
-        background: rgba(2,13,6,0.92);
+        background: rgba(8,0,20,0.95);
         backdrop-filter: blur(16px);
         display: flex; align-items: flex-start;
         justify-content: center;
