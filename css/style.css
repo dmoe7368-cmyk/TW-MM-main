@@ -47,6 +47,8 @@ body::before {
   position   : sticky; top:0; z-index:1000;
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
+.auth-container { position:relative; z-index:1001; }
+.header-combined-pill, .hcp-pill { position:relative; z-index:1001; }
 .header-content { display:flex; align-items:center; justify-content:space-between; }
 .logo-left { display:flex; align-items:center; gap:10px; }
 .logo-icon-glow {
