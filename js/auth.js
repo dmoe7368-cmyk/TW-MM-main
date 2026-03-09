@@ -106,13 +106,13 @@ window.renderAuthUI = function() {
             <!-- Logo -->
             <div style="text-align:center; margin-bottom:28px;">
                 <div style="width:56px; height:56px;
-                            background:linear-gradient(135deg,#00ff88,#00aa55);
+                            background:linear-gradient(135deg,#7dd8ff,#5bb8ff);
                             border-radius:16px; display:flex; align-items:center;
                             justify-content:center; font-size:1.6rem;
                             margin:0 auto 12px;
-                            box-shadow:0 0 24px rgba(0,255,136,0.35);">⚽</div>
+                            box-shadow:0 0 24px rgba(80,190,255,0.35);">⚽</div>
                 <h2 style="font-family:'Rajdhani',sans-serif; font-size:1.4rem;
-                           font-weight:700; color:var(--green); letter-spacing:1px;
+                           font-weight:700; color:#7dd8ff; letter-spacing:1px;
                            margin-bottom:4px;">TW MM TOURNAMENT</h2>
                 <p style="font-family:'Share Tech Mono',monospace; font-size:0.6rem;
                           color:var(--dim); letter-spacing:2px;">SIGN IN TO CONTINUE</p>
@@ -123,7 +123,7 @@ window.renderAuthUI = function() {
                         margin-bottom:24px; border:1px solid var(--border);">
                 <button id="tab-login" onclick="window.toggleAuthTab('login')"
                     style="flex:1; padding:10px; border-radius:40px; border:none;
-                           background:var(--green); color:#000;
+                           background:#7dd8ff; color:#000;
                            font-family:'Rajdhani',sans-serif; font-weight:700;
                            font-size:0.85rem; cursor:pointer; letter-spacing:1px; transition:0.2s;">
                     LOGIN
@@ -207,9 +207,9 @@ window.toggleAuthTab = (type) => {
 
     const tl = document.getElementById('tab-login');
     const ts = document.getElementById('tab-signup');
-    tl.style.background = isLogin ? 'var(--green)' : 'transparent';
+    tl.style.background = isLogin ? '#7dd8ff' : 'transparent';
     tl.style.color       = isLogin ? '#000' : 'var(--dim)';
-    ts.style.background  = isLogin ? 'transparent' : 'var(--green)';
+    ts.style.background  = isLogin ? 'transparent' : '#7dd8ff';
     ts.style.color        = isLogin ? 'var(--dim)' : '#000';
 };
 
@@ -298,7 +298,12 @@ function updateProfileModal(data) {
 
 window.openProfile = () => {
     const modal = document.getElementById('profile-modal');
-    if (modal) modal.style.display = 'flex';
+    if (modal) {
+        modal.style.display = 'flex';
+        // force bottom-sheet position
+        modal.style.alignItems = 'flex-end';
+        modal.style.justifyContent = 'center';
+    }
 };
 
 window.closeProfile = () => {
