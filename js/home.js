@@ -63,23 +63,27 @@ function buildFeeStatus(d) {
         <div class="reg-grid">
             <button class="reg-btn weekly" onclick="window.openRegisterModal('weekly')">
                 <span class="reg-btn-icon">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
                     </svg>
                 </span>
-                <span class="reg-btn-label">Register</span>
-                <span class="reg-btn-name">Weekly</span>
-                <span class="reg-btn-fee">1,000 ကျပ် · 10 coins</span>
+                <div style="flex:1;min-width:0;text-align:left;">
+                    <span class="reg-btn-label">REGISTER</span>
+                    <span class="reg-btn-name">Weekly</span>
+                    <span class="reg-btn-fee">1,000 ကျပ် · 10 coins</span>
+                </div>
             </button>
             <button class="reg-btn cup" onclick="window.openRegisterModal('cup')">
                 <span class="reg-btn-icon">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M8 21h8M12 21v-5"/><path d="M5 3h14v7a7 7 0 01-14 0V3z"/><path d="M5 7H2a5 5 0 004 4.9M19 7h3a5 5 0 01-4 4.9"/>
                     </svg>
                 </span>
-                <span class="reg-btn-label">Register</span>
-                <span class="reg-btn-name">Cup</span>
-                <span class="reg-btn-fee">5,000 ကျပ် · 50 coins</span>
+                <div style="flex:1;min-width:0;text-align:left;">
+                    <span class="reg-btn-label">REGISTER</span>
+                    <span class="reg-btn-name">Cup</span>
+                    <span class="reg-btn-fee">5,000 ကျပ် · 50 coins</span>
+                </div>
             </button>
         </div>
     `;
@@ -148,9 +152,9 @@ function buildMembersSection() {
     return `
         <div class="section-title" style="margin-top:8px;">👥 Registered Members</div>
 
-        <div class="tab-row" style="margin-bottom:12px;">
-            <button id="mem-tab-weekly" class="tab-btn active" onclick="switchMemberTab('weekly')">📅 WEEKLY</button>
-            <button id="mem-tab-cup"    class="tab-btn"        onclick="switchMemberTab('cup')">🏆 CUP</button>
+        <div style="display:flex;gap:6px;margin-bottom:10px;">
+            <button id="mem-tab-weekly" class="tab-btn active" onclick="switchMemberTab('weekly')" style="flex:1;padding:6px 10px;border-radius:10px;font-size:0.72rem;">📅 WEEKLY</button>
+            <button id="mem-tab-cup"    class="tab-btn"        onclick="switchMemberTab('cup')"    style="flex:1;padding:6px 10px;border-radius:10px;font-size:0.72rem;">🏆 CUP</button>
         </div>
 
         <div id="members-list">
