@@ -30,7 +30,7 @@ jobs:
       - name: Run FPL Rankings Sync
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: python scripts/sync_fpl.py
+        run: python scripts/sync_master.py
 
       # ၅။ Scout အချက်အလက်များကို Sync လုပ်ခြင်း
       - name: Run Scout Firebase Sync
