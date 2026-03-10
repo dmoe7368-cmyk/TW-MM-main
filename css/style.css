@@ -164,9 +164,8 @@ body::before {
 /* ── Fee Grid ───────────────────────────── */
 .fee-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .fee-card {
-  border-radius:14px; padding:12px 10px; text-align:center;
+  border-radius:12px; padding:10px 8px; text-align:center;
   position:relative; overflow:hidden;
-  backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
 }
 .fee-card::before {
   content:''; position:absolute; top:0; left:0; right:0; height:1.5px;
@@ -189,17 +188,15 @@ body::before {
   background:linear-gradient(90deg,transparent,rgba(255,130,130,0.4),transparent);
 }
 .fee-status-icon {
-  font-size:1.4rem; margin-bottom:4px; display:block;
-  color:var(--cyan);
-  filter:drop-shadow(0 0 10px rgba(80,200,255,0.55));
+  font-size:1.1rem; margin-bottom:3px; display:block;
 }
 .fee-label {
-  font-size:0.56rem; color:rgba(255,255,255,0.38);
-  letter-spacing:2.5px; text-transform:uppercase; display:block;
+  font-size:0.52rem; color:rgba(255,255,255,0.4);
+  letter-spacing:2px; text-transform:uppercase; display:block; margin-bottom:2px;
 }
 .fee-type {
   font-family:'Barlow Condensed',sans-serif; font-weight:800;
-  font-size:1.05rem; color:var(--text); margin:2px 0 6px;
+  font-size:0.95rem; color:#fff; margin:1px 0 4px;
 }
 .badge-paid {
   display:inline-block;
@@ -219,10 +216,11 @@ body::before {
 /* ── Register Buttons ───────────────────── */
 .reg-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .reg-btn {
-  position:relative; padding:10px 12px; border-radius:14px;
-  border:none; cursor:pointer; overflow:hidden; text-align:center;
+  position:relative; padding:10px 8px; border-radius:12px;
+  border:none; cursor:pointer; overflow:hidden; text-align:left;
   transition:transform 0.15s; background:none; width:100%;
-  display:flex; flex-direction:row; align-items:center; gap:10px;
+  display:flex; flex-direction:row; align-items:center; gap:8px;
+  box-sizing:border-box;
 }
 .reg-btn:active { transform:scale(0.96); }
 .reg-btn.weekly {
@@ -240,29 +238,29 @@ body::before {
 }
 .reg-btn.weekly::before { background:linear-gradient(90deg,transparent,rgba(80,200,255,0.5),transparent); }
 .reg-btn.cup::before    { background:linear-gradient(90deg,transparent,rgba(180,130,255,0.5),transparent); }
-.reg-btn-icon { font-size:1.3rem; display:block; margin-bottom:0; flex-shrink:0; }
-.reg-btn.weekly .reg-btn-icon { color:var(--cyan); filter:drop-shadow(0 0 8px rgba(80,200,255,0.7)); font-size:1.4rem; }
-.reg-btn.cup    .reg-btn-icon { color:var(--purple-a); filter:drop-shadow(0 0 8px rgba(180,130,255,0.7)); font-size:1.4rem; }
-.reg-btn-label { font-size:0.5rem; letter-spacing:1.5px; display:block; margin-bottom:1px; text-transform:uppercase; }
+.reg-btn-icon { font-size:1.2rem; display:block; flex-shrink:0; line-height:1; }
+.reg-btn.weekly .reg-btn-icon { color:var(--cyan); font-size:1.2rem; }
+.reg-btn.cup    .reg-btn-icon { color:var(--purple-a); font-size:1.2rem; }
+.reg-btn-label { font-size:0.48rem; letter-spacing:1px; display:block; margin-bottom:1px; text-transform:uppercase; opacity:0.7; }
 .reg-btn.weekly .reg-btn-label { color:rgba(125,216,255,0.8); }
 .reg-btn.cup    .reg-btn-label { color:rgba(196,160,255,0.8); }
-.reg-btn-name { font-size:0.95rem; font-weight:800; display:block; font-family:'Barlow Condensed',sans-serif; letter-spacing:1px; }
+.reg-btn-name { font-size:0.88rem; font-weight:800; display:block; font-family:'Barlow Condensed',sans-serif; letter-spacing:0.5px; line-height:1.1; }
 .reg-btn.weekly .reg-btn-name { color:var(--cyan); }
 .reg-btn.cup    .reg-btn-name { color:var(--purple-a); }
-.reg-btn-fee { margin-top:2px; font-size:0.68rem; display:block; }
+.reg-btn-fee { margin-top:2px; font-size:0.62rem; display:block; opacity:0.75; white-space:nowrap; }
 .reg-btn.weekly .reg-btn-fee { color:rgba(125,216,255,0.65); }
 .reg-btn.cup    .reg-btn-fee { color:rgba(196,160,255,0.65); }
 
 /* ── Member Rows ────────────────────────── */
-.tab-btn-group { display:flex; gap:8px; margin-bottom:12px; }
+.tab-btn-group { display:flex; gap:6px; margin-bottom:10px; }
 .tab-btn {
-  flex:1; padding:9px 12px; border-radius:12px;
+  flex:1; padding:6px 10px; border-radius:10px;
   border:1px solid var(--border2); background:var(--card2);
   color:var(--dim); cursor:pointer;
   font-family:'Barlow Condensed',sans-serif; font-weight:700;
-  font-size:0.85rem; letter-spacing:1px;
-  display:flex; align-items:center; justify-content:center; gap:6px;
-  transition:all 0.2s;
+  font-size:0.75rem; letter-spacing:0.5px;
+  display:flex; align-items:center; justify-content:center; gap:5px;
+  transition:all 0.2s; white-space:nowrap;
 }
 .tab-btn.active {
   background:rgba(80,190,255,0.1); border-color:rgba(80,190,255,0.35);
