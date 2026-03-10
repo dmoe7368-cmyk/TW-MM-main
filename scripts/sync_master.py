@@ -167,8 +167,11 @@ def setup_divisions(api_players, api_entry_ids):
             })
             print(f"  ✅ [NEW] {team} → {division}")
         else:
-            doc_ref.update({"division": division, "name": name, "team": team})
-            print(f"  🔄 [UPDATE] {team} → {division}")
+            # division ကို မထိဘူး — Firebase မှာ manual ပြင်ထားရင် ကျန်ရစ်မယ်
+            # name/team ပဲ update — division သပ်သပ်
+            existing_div = doc_snap.to_dict().get("division", "")
+            print(f"  🔄 [UPDATE] {team} | division kept: {existing_div}")
+            doc_ref.update({"name": name, "team": team})
 
     return all_entries
 
