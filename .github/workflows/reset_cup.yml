@@ -1,0 +1,18 @@
+name: Reset Cup Registration
+
+on:
+  workflow_dispatch:     # Manual run — Season end (GW35 ပြီး) မှ run
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - run: pip install firebase-admin
+      - name: Reset Cup
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: python scripts/reset_registration.py --type cup
