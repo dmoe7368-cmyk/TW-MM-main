@@ -55,8 +55,8 @@ function buildFeeStatus(d) {
     return `
         <div class="section-title">📋 My Fee Status</div>
         <div class="fee-grid" id="fee-grid">
-            ${buildFeeCard('week', weekPaid, 'Weekly', '5', mmkWeek)}
-            ${buildFeeCard('cup',  cupPaid,  'Cup',    '10', mmkCup)}
+            ${buildFeeCard('week', weekPaid, 'Weekly', '1,000', mmkWeek)}
+            ${buildFeeCard('cup',  cupPaid,  'Cup',    '5,000', mmkCup)}
         </div>
 
         <div class="section-title">🎯 Register Now</div>
@@ -69,7 +69,7 @@ function buildFeeStatus(d) {
                 </span>
                 <span class="reg-btn-label">Register</span>
                 <span class="reg-btn-name">Weekly</span>
-                <span class="reg-btn-fee">Weekly · 1,000 ကျပ်</span>
+                <span class="reg-btn-fee">1,000 ကျပ် · 10 coins</span>
             </button>
             <button class="reg-btn cup" onclick="window.openRegisterModal('cup')">
                 <span class="reg-btn-icon">
@@ -79,7 +79,7 @@ function buildFeeStatus(d) {
                 </span>
                 <span class="reg-btn-label">Register</span>
                 <span class="reg-btn-name">Cup</span>
-                <span class="reg-btn-fee">Cup · 5,000 ကျပ်</span>
+                <span class="reg-btn-fee">5,000 ကျပ် · 50 coins</span>
             </button>
         </div>
     `;
@@ -87,7 +87,7 @@ function buildFeeStatus(d) {
 
 function buildFeeCard(id, paid, label, coins, mmk) {
     const cls   = paid ? 'paid' : 'unpaid';
-    const icon  = paid ? `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
+    const icon  = paid ? `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7dd8ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
                        : `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff4d4d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
     const badge = paid ? `<span class="fee-badge badge-paid">PAID</span>`
                        : `<span class="fee-badge badge-unpaid">UNPAID</span>`;
@@ -96,6 +96,7 @@ function buildFeeCard(id, paid, label, coins, mmk) {
             <div class="fee-status-icon">${icon}</div>
             <div class="fee-label">${label.toUpperCase()}</div>
             <div class="fee-type">${coins} ကျပ်</div>
+            <div style="font-family:'Rajdhani',sans-serif;font-size:0.62rem;color:rgba(255,255,255,0.35);margin-top:2px;">${id==="week"?"10 coins":"50 coins"}</div>
             <div style="margin-top:6px;">${badge}</div>
         </div>
     `;
@@ -111,12 +112,12 @@ function updateFeeCards(d) {
 
 function buildLoginPrompt() {
     return `
-        <div style="background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.18);
+        <div style="background:rgba(80,190,255,0.3);border:1px solid rgba(80,190,255,0.3);
                     border-radius:14px;padding:14px 16px;margin-bottom:16px;
                     display:flex;align-items:center;gap:12px;position:relative;overflow:hidden;">
             <div style="width:40px;height:40px;border-radius:50%;flex-shrink:0;
-                         background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.2);
-                         display:flex;align-items:center;justify-content:center;color:var(--green);">
+                         background:rgba(80,190,255,0.3);border:1px solid rgba(80,190,255,0.2);
+                         display:flex;align-items:center;justify-content:center;color:#7dd8ff;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
                     <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
                 </svg>
@@ -125,15 +126,15 @@ function buildLoginPrompt() {
                 <div style="font-family:'Rajdhani',sans-serif;font-weight:800;font-size:0.9rem;
                              color:var(--text);">Fee Status ကြည့်ဖို့ Login ဝင်ပါ</div>
                 <div style="font-family:'Rajdhani',sans-serif;font-size:0.75rem;color:var(--dim);margin-top:2px;">
-                    Weekly <span style="color:var(--green);font-weight:700;">1,000 ကျပ်</span>
+                    Weekly <span style="color:#7dd8ff;font-weight:700;">1,000 ကျပ် (10 coins)</span>
                     &nbsp;·&nbsp;
-                    Cup <span style="color:var(--green);font-weight:700;">5,000 ကျပ်</span>
+                    Cup <span style="color:#7dd8ff;font-weight:700;">5,000 ကျပ် (50 coins)</span>
                 </div>
             </div>
             <button onclick="window.renderAuthUI()"
                     style="flex-shrink:0;padding:8px 18px;font-size:0.85rem;border-radius:8px;
-                           background:linear-gradient(135deg,rgba(0,255,136,0.12),rgba(0,180,80,0.06));
-                           border:1px solid rgba(0,255,136,0.28);color:var(--green);cursor:pointer;
+                           background:linear-gradient(135deg,rgba(80,190,255,0.3),rgba(0,180,80,0.06));
+                           border:1px solid rgba(80,190,255,0.3);color:#7dd8ff;cursor:pointer;
                            font-family:'Rajdhani',sans-serif;font-weight:900;letter-spacing:1px;
                            white-space:nowrap;">
                 LOGIN
@@ -201,14 +202,14 @@ function loadMembers(type) {
             }
 
             const isWeekly = t === 'weekly';
-            const color    = isWeekly ? 'var(--green)' : 'var(--gold)';
+            const color    = isWeekly ? '#7dd8ff' : 'var(--gold)';
             const total    = sortedDocs.length;
 
             el.innerHTML = `
                 <!-- Count badge -->
                 <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
-                    <div style="background:${isWeekly ? 'rgba(0,255,136,0.1)' : 'rgba(212,175,55,0.1)'}; 
-                                border:1px solid ${isWeekly ? 'rgba(0,255,136,0.3)' : 'rgba(212,175,55,0.3)'};
+                    <div style="background:${isWeekly ? 'rgba(80,190,255,0.12)' : 'rgba(212,175,55,0.1)'}; 
+                                border:1px solid ${isWeekly ? 'rgba(80,190,255,0.28)' : 'rgba(212,175,55,0.3)'};
                                 border-radius:20px; padding:4px 14px;
                                 font-family:'Share Tech Mono',monospace; font-size:0.65rem;
                                 color:${color}; letter-spacing:1px;">
@@ -235,15 +236,15 @@ function loadMembers(type) {
                             <div style="position:absolute; left:0; top:0; bottom:0; width:3px; background:${color}; opacity:0.6;"></div>
 
                             <!-- Rank -->
-                            <div style="font-family:'Share Tech Mono',monospace; font-size:0.65rem; color:var(--dim); width:18px; text-align:center; flex-shrink:0;">
+                            <div style="font-family:'Rajdhani',sans-serif; font-size:0.72rem; color:rgba(255,255,255,0.3); width:18px; text-align:center; flex-shrink:0;">
                                 ${i + 1}
                             </div>
 
                             <!-- Avatar -->
                             <div style="
                                 width:36px; height:36px; border-radius:50%; flex-shrink:0;
-                                background:${isWeekly ? 'linear-gradient(135deg,#003d1a,#001a0a)' : 'linear-gradient(135deg,#2a1800,#110a00)'};
-                                border:1.5px solid ${isWeekly ? 'rgba(0,255,136,0.3)' : 'rgba(212,175,55,0.3)'};
+                                background:${isWeekly ? 'rgba(80,190,255,0.1)' : 'rgba(196,160,255,0.1)'};
+                                border:1.5px solid ${isWeekly ? 'rgba(80,190,255,0.28)' : 'rgba(212,175,55,0.3)'};
                                 display:flex; align-items:center; justify-content:center;
                                 font-family:'Rajdhani',sans-serif; font-weight:700;
                                 font-size:0.95rem; color:${color};">
@@ -297,7 +298,6 @@ function buildNewsSection() {
 
 function loadNews() {
     db.collection("tw_news")
-        .orderBy("created_at", "desc")
         .limit(20)
         .onSnapshot(snap => {
             const list = document.getElementById('news-list');
@@ -314,7 +314,14 @@ function loadNews() {
                 return;
             }
 
-            list.innerHTML = snap.docs.map(doc => buildNewsCard(doc.data())).join('');
+            // client-side sort — created_at desc
+            const docs = snap.docs.slice().sort((a, b) => {
+                const ta = a.data().created_at?.seconds || 0;
+                const tb = b.data().created_at?.seconds || 0;
+                return tb - ta;
+            });
+
+            list.innerHTML = docs.map(doc => buildNewsCard(doc.data())).join('');
         }, err => {
             const list = document.getElementById('news-list');
             if (list) list.innerHTML = `<div style="color:var(--danger); text-align:center; padding:20px; font-size:0.85rem;">${err.message}</div>`;
@@ -343,7 +350,7 @@ function buildNewsCard(p) {
             <span class="news-tag ${isGold ? 'gold' : ''}">${tagLabel}</span>
             ${imgHtml}
             <div class="news-title">${p.title || ''}</div>
-            ${p.body ? `<div class="news-body" style="margin-top:6px;">${p.body}</div>` : ''}
+            ${p.body ? `<div class="news-body" style="margin-top:6px;white-space:pre-line;">${p.body}</div>` : ''}
             <div class="news-meta">
                 <span style="display:flex;align-items:center;gap:5px;">
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
