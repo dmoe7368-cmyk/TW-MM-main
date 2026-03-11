@@ -108,5 +108,44 @@
     <script src="js/live-hub.js?v=7"></script>
     <script src="js/community.js?v=7"></script>
     <script src="js/register-fee.js?v=7"></script>
+
+    <!-- Profile Modal -->
+    <div id="profile-modal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;">
+        <div onclick="event.stopPropagation()" style="background:#0e0018;border-radius:20px 20px 0 0;width:100%;max-width:480px;border:1px solid rgba(255,255,255,0.1);border-bottom:none;padding:20px 18px 36px;">
+            <div style="width:40px;height:4px;background:rgba(255,255,255,0.15);border-radius:4px;margin:0 auto 20px;"></div>
+            <div style="text-align:center;margin-bottom:20px;">
+                <div style="width:60px;height:60px;border-radius:50%;background:rgba(80,190,255,0.15);border:2px solid rgba(80,190,255,0.4);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:1.8rem;">⚽</div>
+                <div id="prof-manager" style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem;color:#fff;"></div>
+                <div id="prof-team" style="font-size:0.75rem;color:rgba(255,255,255,0.4);margin-top:2px;"></div>
+            </div>
+            <div style="background:rgba(255,255,255,0.04);border-radius:14px;padding:14px;margin-bottom:16px;display:flex;flex-direction:column;gap:10px;">
+                <div style="display:flex;justify-content:space-between;">
+                    <span style="font-size:0.72rem;color:rgba(255,255,255,0.4);">💰 Coins</span>
+                    <span id="prof-coins" style="font-family:'Barlow Condensed',sans-serif;font-weight:800;color:#7dd8ff;"></span>
+                </div>
+                <div style="display:flex;justify-content:space-between;">
+                    <span style="font-size:0.72rem;color:rgba(255,255,255,0.4);">📅 Weekly</span>
+                    <span id="prof-week" style="font-size:0.8rem;color:#fff;"></span>
+                </div>
+                <div style="display:flex;justify-content:space-between;">
+                    <span style="font-size:0.72rem;color:rgba(255,255,255,0.4);">🏆 Cup</span>
+                    <span id="prof-cup" style="font-size:0.8rem;color:#fff;"></span>
+                </div>
+                <div style="display:flex;justify-content:space-between;">
+                    <span style="font-size:0.72rem;color:rgba(255,255,255,0.4);">📘 Facebook</span>
+                    <span id="prof-fb" style="font-size:0.8rem;color:rgba(255,255,255,0.6);"></span>
+                </div>
+            </div>
+            <button onclick="window.handleLogout()" style="width:100%;padding:12px;border-radius:12px;background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.3);color:#f87171;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;letter-spacing:1px;cursor:pointer;margin-bottom:8px;">
+                🚪 LOGOUT
+            </button>
+            <button onclick="window.closeProfile()" style="width:100%;padding:10px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;">
+                CLOSE
+            </button>
+        </div>
+    </div>
+
+    <div id="toast-container" style="position:fixed;top:70px;right:12px;z-index:9999;display:flex;flex-direction:column;gap:8px;"></div>
+
 </body>
 </html>
