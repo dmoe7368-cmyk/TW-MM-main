@@ -51,7 +51,19 @@ window.openRegisterModal = async function(type) {
 
     holder.innerHTML = `
         <div class="modal-overlay" id="reg-overlay" onclick="window.closeRegisterModal()">
-            <div class="profile-card" onclick="event.stopPropagation()" style="max-width:360px; text-align:left;">
+            <div onclick="event.stopPropagation()" style="
+                background:#0e0018;
+                border-radius:20px 20px 0 0;
+                width:100%; max-width:480px;
+                border:1px solid rgba(255,255,255,0.1);
+                border-bottom:none;
+                padding:20px 18px 32px;
+                animation:slideUp 0.3s ease;
+                text-align:left;
+                position:relative;
+            ">
+            <!-- drag bar -->
+            <div style="width:40px;height:4px;background:rgba(255,255,255,0.15);border-radius:4px;margin:0 auto 20px;"></div>
 
                 <!-- Header -->
                 <div style="text-align:center; margin-bottom:20px;">

@@ -354,7 +354,7 @@ function buildNewsCard(p) {
             <span class="news-tag ${isGold ? 'gold' : ''}">${tagLabel}</span>
             ${imgHtml}
             <div class="news-title">${p.title || ''}</div>
-            ${p.body ? `<div class="news-body" style="margin-top:6px;white-space:pre-line;">${p.body}</div>` : ''}
+            ${p.body ? `<div class="news-body" style="margin-top:6px;${p.body_type==='html'?'':'white-space:pre-line;'}">${p.body}</div>` : ''}
             <div class="news-meta">
                 <span style="display:flex;align-items:center;gap:5px;">
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
