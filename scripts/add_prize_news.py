@@ -1,7 +1,6 @@
 """
 add_prize_news.py — TW MM Tournament
-Prize announcement news ကို tw_news မှာ ထည့်သည်
-Manual run တစ်ခါပဲ လုပ်ရမယ်
+Prize cards with photo background + gold/white typography
 """
 
 import os, json, firebase_admin
@@ -20,43 +19,144 @@ def init_firebase():
 
 db = init_firebase()
 
-# HTML body — news card မှာ rich layout ပြမယ်
 body_html = """
-<div style="display:flex;flex-direction:column;gap:10px;">
+<div style="display:flex;flex-direction:column;gap:14px;">
 
-  <!-- Weekly -->
-  <div style="background:linear-gradient(135deg,rgba(80,190,255,0.08),rgba(80,190,255,0.03));border:1px solid rgba(80,190,255,0.25);border-radius:12px;padding:12px 14px;">
-    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:0.95rem;color:#7dd8ff;letter-spacing:1px;margin-bottom:8px;">📅 TW WEEKLY — GW30</div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-      <span style="color:rgba(255,255,255,0.6);font-size:0.78rem;">🥇 Winner</span>
-      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;color:#fbbf24;">15,000 ကျပ်</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <span style="color:rgba(255,255,255,0.6);font-size:0.78rem;">🥈 Runner Up</span>
-      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;color:rgba(255,255,255,0.75);">10,000 ကျပ်</span>
+  <!-- WEEKLY -->
+  <div style="
+    border-radius:16px;overflow:hidden;position:relative;
+    background:url('assets/images/prize_weekly.jpg') center/cover no-repeat;
+    min-height:140px;
+  ">
+    <div style="
+      position:absolute;inset:0;
+      background:linear-gradient(135deg,rgba(0,20,60,0.82),rgba(8,0,20,0.88));
+      border-radius:16px;
+    "></div>
+    <div style="position:relative;padding:16px 18px;">
+      <div style="
+        font-family:'Barlow Condensed',sans-serif;font-weight:900;
+        font-size:0.65rem;letter-spacing:3px;color:rgba(125,216,255,0.7);
+        text-transform:uppercase;margin-bottom:4px;
+      ">📅 TW WEEKLY — GW30</div>
+      <div style="
+        font-family:'Barlow Condensed',sans-serif;font-weight:900;
+        font-size:1.5rem;color:#fff;letter-spacing:1px;
+        text-shadow:0 2px 12px rgba(0,0,0,0.6);margin-bottom:12px;
+      ">ဆုကြေးများ</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;
+          background:rgba(255,255,255,0.07);border-radius:10px;padding:10px 14px;
+          border:1px solid rgba(255,255,255,0.1);">
+          <span style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:1.2rem;">🥇</span>
+            <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;
+              font-size:0.95rem;color:rgba(255,255,255,0.9);letter-spacing:0.5px;">WINNER</span>
+          </span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:900;
+            font-size:1.2rem;color:#fbbf24;
+            text-shadow:0 0 12px rgba(251,191,36,0.5);">15,000 ကျပ်</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;
+          background:rgba(255,255,255,0.05);border-radius:10px;padding:10px 14px;
+          border:1px solid rgba(255,255,255,0.08);">
+          <span style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:1.2rem;">🥈</span>
+            <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;
+              font-size:0.95rem;color:rgba(255,255,255,0.7);letter-spacing:0.5px;">RUNNER UP</span>
+          </span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:900;
+            font-size:1.2rem;color:rgba(255,255,255,0.75);">10,000 ကျပ်</span>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Cup -->
-  <div style="background:linear-gradient(135deg,rgba(196,160,255,0.08),rgba(196,160,255,0.03));border:1px solid rgba(196,160,255,0.25);border-radius:12px;padding:12px 14px;">
-    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:0.95rem;color:#c4a0ff;letter-spacing:1px;margin-bottom:8px;">🏆 TW FPL CUP — Season 13</div>
-    <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);margin-bottom:8px;">Division A + B</div>
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <span style="color:rgba(255,255,255,0.6);font-size:0.78rem;">🥇 Winner</span>
-      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;color:#fbbf24;">30,000 ကျပ်</span>
+  <!-- FPL CUP -->
+  <div style="
+    border-radius:16px;overflow:hidden;position:relative;
+    background:url('assets/images/prize_cup.jpg') center/cover no-repeat;
+    min-height:150px;
+  ">
+    <div style="
+      position:absolute;inset:0;
+      background:linear-gradient(135deg,rgba(40,0,80,0.82),rgba(8,0,20,0.88));
+      border-radius:16px;
+    "></div>
+    <div style="position:relative;padding:16px 18px;">
+      <div style="
+        font-family:'Barlow Condensed',sans-serif;font-weight:900;
+        font-size:0.65rem;letter-spacing:3px;color:rgba(196,160,255,0.7);
+        text-transform:uppercase;margin-bottom:4px;
+      ">🏆 TW FPL CUP — SEASON 13</div>
+      <div style="
+        font-family:'Barlow Condensed',sans-serif;font-weight:900;
+        font-size:1.5rem;color:#fff;letter-spacing:1px;
+        text-shadow:0 2px 12px rgba(0,0,0,0.6);margin-bottom:4px;
+      ">Division A + B</div>
+      <div style="font-size:0.7rem;color:rgba(255,255,255,0.35);margin-bottom:12px;">Combined Winner</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;
+        background:rgba(255,255,255,0.07);border-radius:10px;padding:10px 14px;
+        border:1px solid rgba(196,160,255,0.2);">
+        <span style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:1.2rem;">🥇</span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;
+            font-size:0.95rem;color:rgba(255,255,255,0.9);letter-spacing:0.5px;">WINNER</span>
+        </span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:900;
+          font-size:1.2rem;color:#fbbf24;
+          text-shadow:0 0 12px rgba(251,191,36,0.5);">30,000 ကျပ်</span>
+      </div>
     </div>
   </div>
 
-  <!-- FA Cup -->
-  <div style="background:linear-gradient(135deg,rgba(251,191,36,0.08),rgba(251,191,36,0.03));border:1px solid rgba(251,191,36,0.25);border-radius:12px;padding:12px 14px;">
-    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:0.95rem;color:#fbbf24;letter-spacing:1px;margin-bottom:8px;">⚽ TW FA CUP</div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-      <span style="color:rgba(255,255,255,0.6);font-size:0.78rem;">🥇 Winner</span>
-      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;color:#fbbf24;">40,000 ကျပ်</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <span style="color:rgba(255,255,255,0.6);font-size:0.78rem;">🥈 Runner Up</span>
-      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;color:rgba(255,255,255,0.75);">20,000 ကျပ်</span>
+  <!-- TW FA CUP -->
+  <div style="
+    border-radius:16px;overflow:hidden;position:relative;
+    background:url('assets/images/prize_fa.jpg') center/cover no-repeat;
+    min-height:160px;
+  ">
+    <div style="
+      position:absolute;inset:0;
+      background:linear-gradient(135deg,rgba(40,20,0,0.82),rgba(8,0,20,0.88));
+      border-radius:16px;
+    "></div>
+    <div style="position:relative;padding:16px 18px;">
+      <div style="
+        font-family:'Barlow Condensed',sans-serif;font-weight:900;
+        font-size:0.65rem;letter-spacing:3px;color:rgba(251,191,36,0.7);
+        text-transform:uppercase;margin-bottom:4px;
+      ">⚽ TW FA CUP</div>
+      <div style="
+        font-family:'Barlow Condensed',sans-serif;font-weight:900;
+        font-size:1.5rem;color:#fff;letter-spacing:1px;
+        text-shadow:0 2px 12px rgba(0,0,0,0.6);margin-bottom:12px;
+      ">ဆုကြေးများ</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;
+          background:rgba(255,255,255,0.07);border-radius:10px;padding:10px 14px;
+          border:1px solid rgba(251,191,36,0.2);">
+          <span style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:1.2rem;">🥇</span>
+            <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;
+              font-size:0.95rem;color:rgba(255,255,255,0.9);letter-spacing:0.5px;">WINNER</span>
+          </span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:900;
+            font-size:1.2rem;color:#fbbf24;
+            text-shadow:0 0 12px rgba(251,191,36,0.5);">40,000 ကျပ်</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;
+          background:rgba(255,255,255,0.05);border-radius:10px;padding:10px 14px;
+          border:1px solid rgba(255,255,255,0.08);">
+          <span style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:1.2rem;">🥈</span>
+            <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;
+              font-size:0.95rem;color:rgba(255,255,255,0.7);letter-spacing:0.5px;">RUNNER UP</span>
+          </span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:900;
+            font-size:1.2rem;color:rgba(255,255,255,0.75);">20,000 ကျပ်</span>
+        </div>
+      </div>
     </div>
   </div>
 
