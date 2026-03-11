@@ -1,0 +1,18 @@
+name: Add Prize News
+
+on:
+  workflow_dispatch:
+
+jobs:
+  add-prize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - run: pip install firebase-admin
+      - name: Add Prize News
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: python scripts/add_prize_news.py
