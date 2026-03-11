@@ -61,30 +61,48 @@ function buildFeeStatus(d) {
 
         <div class="section-title">🎯 Register Now</div>
         <div class="reg-grid">
-            <button class="reg-btn weekly" onclick="window.openRegisterModal('weekly')">
-                <span class="reg-btn-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-                    </svg>
-                </span>
-                <div style="flex:1;min-width:0;text-align:left;">
-                    <span class="reg-btn-label">REGISTER</span>
-                    <span class="reg-btn-name">Weekly</span>
-                    <span class="reg-btn-fee">1,000 ကျပ် · 10 coins</span>
-                </div>
-            </button>
-            <button class="reg-btn cup" onclick="window.openRegisterModal('cup')">
-                <span class="reg-btn-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M8 21h8M12 21v-5"/><path d="M5 3h14v7a7 7 0 01-14 0V3z"/><path d="M5 7H2a5 5 0 004 4.9M19 7h3a5 5 0 01-4 4.9"/>
-                    </svg>
-                </span>
-                <div style="flex:1;min-width:0;text-align:left;">
-                    <span class="reg-btn-label">REGISTER</span>
-                    <span class="reg-btn-name">Cup</span>
-                    <span class="reg-btn-fee">5,000 ကျပ် · 50 coins</span>
-                </div>
-            </button>
+            ${weekPaid
+                ? `<div class="reg-btn weekly" style="opacity:0.7;cursor:default;border:2px solid rgba(80,190,255,0.8);background:rgba(80,190,255,0.08);">
+                    <span class="reg-btn-icon" style="color:#7dd8ff;">✅</span>
+                    <div style="flex:1;min-width:0;text-align:left;">
+                        <span class="reg-btn-label" style="color:rgba(125,216,255,0.6);">REGISTERED</span>
+                        <span class="reg-btn-name" style="color:#7dd8ff;">Weekly</span>
+                        <span class="reg-btn-fee" style="color:rgba(125,216,255,0.5);">ပေးသွင်းပြီး</span>
+                    </div>
+                   </div>`
+                : `<button class="reg-btn weekly" onclick="window.openRegisterModal('weekly')">
+                    <span class="reg-btn-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                    </span>
+                    <div style="flex:1;min-width:0;text-align:left;">
+                        <span class="reg-btn-label">REGISTER</span>
+                        <span class="reg-btn-name">Weekly</span>
+                        <span class="reg-btn-fee">1,000 ကျပ် · 10 coins</span>
+                    </div>
+                   </button>`}
+            ${cupPaid
+                ? `<div class="reg-btn cup" style="opacity:0.7;cursor:default;border:2px solid rgba(196,160,255,0.8);background:rgba(196,160,255,0.08);">
+                    <span class="reg-btn-icon" style="color:#c4a0ff;">✅</span>
+                    <div style="flex:1;min-width:0;text-align:left;">
+                        <span class="reg-btn-label" style="color:rgba(196,160,255,0.6);">REGISTERED</span>
+                        <span class="reg-btn-name" style="color:#c4a0ff;">Cup</span>
+                        <span class="reg-btn-fee" style="color:rgba(196,160,255,0.5);">ပေးသွင်းပြီး</span>
+                    </div>
+                   </div>`
+                : `<button class="reg-btn cup" onclick="window.openRegisterModal('cup')">
+                    <span class="reg-btn-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 21h8M12 21v-5"/><path d="M5 3h14v7a7 7 0 01-14 0V3z"/><path d="M5 7H2a5 5 0 004 4.9M19 7h3a5 5 0 01-4 4.9"/>
+                        </svg>
+                    </span>
+                    <div style="flex:1;min-width:0;text-align:left;">
+                        <span class="reg-btn-label">REGISTER</span>
+                        <span class="reg-btn-name">Cup</span>
+                        <span class="reg-btn-fee">5,000 ကျပ် · 50 coins</span>
+                    </div>
+                   </button>`}
         </div>
     `;
 }
