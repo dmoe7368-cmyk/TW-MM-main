@@ -172,9 +172,9 @@ body::before {
   pointer-events:none;
 }
 .fee-card.paid {
-  background:linear-gradient(150deg,rgba(0,140,200,0.12),rgba(80,40,160,0.14));
-  border:2px solid rgba(80,190,255,0.5);
-  box-shadow:0 0 0 1px rgba(80,190,255,0.1), 0 8px 28px rgba(0,160,255,0.12);
+  background:linear-gradient(150deg,rgba(0,140,200,0.15),rgba(80,40,160,0.18));
+  border:2px solid rgba(80,190,255,0.8);
+  box-shadow:0 0 18px rgba(80,190,255,0.25), 0 0 0 1px rgba(80,190,255,0.15);
 }
 .fee-card.paid::before {
   background:linear-gradient(90deg,transparent,rgba(80,200,255,0.6),transparent);
@@ -306,8 +306,8 @@ body::before {
   letter-spacing:1px; color:var(--dim); margin-bottom:8px; font-weight:700;
 }
 .news-tag.gold { background:rgba(251,191,36,0.12); color:#fbbf24; border:1px solid rgba(251,191,36,0.22); }
-.news-title { font-family:'Barlow Condensed',sans-serif; font-size:1.15rem; font-weight:800; color:#ffffff; margin-bottom:6px; letter-spacing:0.3px; }
-.news-body  { font-size:0.82rem; color:rgba(255,255,255,0.82); line-height:1.7; white-space:pre-line; }
+.news-title { font-family:'Barlow Condensed',sans-serif; font-size:1.22rem; font-weight:800; color:#ffffff; margin-bottom:8px; letter-spacing:0.3px; }
+.news-body  { font-size:0.86rem; color:rgba(255,255,255,0.88); line-height:1.75; white-space:pre-line; }
 .news-meta  { display:flex; justify-content:space-between; margin-top:10px; font-size:0.63rem; color:rgba(255,255,255,0.38); }
 .news-img-placeholder img { width:100%; border-radius:12px; margin-bottom:10px; object-fit:cover; max-height:160px; }
 
