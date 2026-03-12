@@ -36,7 +36,7 @@ window.openRegisterModal = async function(type) {
         }
     } catch(e) { /* config မရရင် ဆက်သွားတယ် */ }
     // GW/Season label
-    const regLabel = type === 'weekly' ? \`GW\${currentGw}\` : \`Season \${currentSeason}\`;
+    const regLabel = type === 'weekly' ? `GW${currentGw}` : `Season ${currentSeason}`;
 
     // Load latest user data
     let userData = {};
@@ -212,8 +212,8 @@ window.confirmRegister = async function(type) {
 
             // Registration log — Admin မြင်ရန် + Members list ပြရန်
             const regId = type === 'weekly'
-                ? \`weekly_\${user.uid}_gw\${currentGw}\`
-                : \`cup_\${user.uid}_s\${currentSeason}\`;
+                ? `weekly_${user.uid}_gw${currentGw}`
+                : `cup_${user.uid}_s${currentSeason}`;
             tx.set(db.collection("tw_registrations").doc(regId), {
                 uid:          user.uid,
                 manager_name: data.manager_name || '',
