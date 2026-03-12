@@ -194,16 +194,29 @@ window.switchMemberTab = function(type) {
     loadMembers(type);
 };
 
-function loadMembers(type) {
+async function loadMembers(type) {
     const t = type || window._memberTab || 'weekly';
     const list = document.getElementById('members-list');
     if (!list) return;
 
     list.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
 
-    db.collection("tw_registrations")
-        .where("type", "==", t)
-        .onSnapshot(snap => {
+    // Get current GW/Season from config
+    let currentGw = 30, currentSeason = 13;
+    try {
+        const cfgDoc = await db.collection('tw_config').doc('settings').get();
+        if (cfgDoc.exists) {
+            currentGw     = cfgDoc.data().current_gw     ?? 30;
+            currentSeason = cfgDoc.data().current_season ?? 13;
+        }
+    } catch(e) {}
+
+    // Sub-collection path
+    const subCol = t === 'weekly'
+        ? db.collection('tw_registrations').doc('weekly').collection('gw_' + currentGw)
+        : db.collection('tw_registrations').doc('cup').collection('season_' + currentSeason);
+
+    subCol.onSnapshot(snap => {
             const el = document.getElementById('members-list');
             if (!el) return;
 
