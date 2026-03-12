@@ -1,0 +1,25 @@
+name: Sync TW FA Playoff Points
+
+on:
+  workflow_dispatch:   # Manual run
+
+  schedule:
+    - cron: '0 14 * * 2'   # Tuesday  20:30 MMT
+    - cron: '0 14 * * 3'   # Wednesday 20:30 MMT
+    - cron: '0 14 * * 6'   # Saturday  20:30 MMT
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - run: pip install firebase-admin requests
+      - name: Sync Playoff Points
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: python scripts/sync_playoff_points.py
