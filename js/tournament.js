@@ -41,8 +41,8 @@ window.renderLeagues = window.renderTournament = function () {
 
         // Division tabs
         '<div style="display:flex;gap:8px;margin-bottom:12px;">' +
-        '<button id="btn-divA" onclick="window.filterDivision(\'Division A\')" style="flex:1;padding:6px 8px;border-radius:10px;border:2px solid rgba(251,191,36,0.55);background:rgba(251,191,36,0.13);color:#fbbf24;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:0.68rem;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:0.2s;">⭐ DIVISION A</button>' +
-        '<button id="btn-divB" onclick="window.filterDivision(\'Division B\')" style="flex:1;padding:6px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.35);font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:0.68rem;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:0.2s;">🥈 DIVISION B</button>' +
+        '<button id="btn-divA" onclick="window.filterDivision(\'Division A\')" style="flex:1;padding:6px 8px;border-radius:10px;border:2px solid rgba(251,191,36,0.55);background:rgba(251,191,36,0.13);color:#fbbf24;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:0.68rem;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:0.2s;">⚜️ DIVISION A</button>' +
+        '<button id="btn-divB" onclick="window.filterDivision(\'Division B\')" style="flex:1;padding:6px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.35);font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:0.68rem;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:0.2s;">🔱 DIVISION B</button>' +
         '</div>' +
 
         // GW badge
