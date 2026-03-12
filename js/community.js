@@ -1,109 +1,140 @@
 /**
- * community.js — TW MM Tournament
- * Group Chat · Fixed Header+Input · Scroll Messages · Toast Confirm
+ * community.js — TW MM Tournament v14
+ * Features: Text, Photo upload, Voice record/playback, Reply, Reactions
  */
 
-let _communityName = "User";
-let _communityUid  = null;
+var _replyTo       = null;
+var _communityName = '';
+var _communityUid  = '';
+var _mediaRecorder = null;
+var _audioChunks   = [];
+var _isRecording   = false;
 
-// ── Render ────────────────────────────────────────────────────────────────────
-window.renderCommunity = async function() {
-    const main = document.getElementById('main-root');
+function escHtml(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(s) {
+    if (!s) return '';
+    return String(s).replace(/'/g,'&#39;').replace(/"/g,'&quot;');
+}
+
+// ── Render ────────────────────────────────────────────────────
+window.renderCommunity = function() {
+    const main = document.getElementById('content-display') || document.getElementById('main-root');
+    if (!main) return;
+
     const user = auth.currentUser;
-    _communityUid = user?.uid || null;
-
     if (user) {
-        try {
-            const doc = await db.collection("users").doc(user.uid).get();
-            if (doc.exists)
-                _communityName = doc.data().manager_name || doc.data().facebook_name || "User";
-        } catch(e) {}
+        db.collection('users').doc(user.uid).get().then(d => {
+            _communityName = d.exists ? (d.data().manager_name || user.displayName || 'Manager') : 'Manager';
+            _communityUid  = user.uid;
+        });
     }
 
-    const init = _communityName.charAt(0).toUpperCase();
+    const init = _communityName ? _communityName.charAt(0).toUpperCase() : '?';
 
-    // Use position:fixed for header & input so messages area scrolls freely
     main.innerHTML = `
-        <div id="comm-wrap" style="position:relative;">
+        <div style="display:flex;flex-direction:column;height:calc(100vh - var(--nav-h));position:relative;">
 
-            <!-- ① Fixed Group Header -->
-            <div id="comm-header"
-                 style="position:fixed;top:56px;left:0;right:0;z-index:200;
-                        background:rgba(8,0,20,0.98);border-bottom:1px solid rgba(255,255,255,0.08);
-                        padding:11px 16px;display:flex;align-items:center;gap:12px;
-                        max-width:100%;">
-                <div style="width:40px;height:40px;border-radius:50%;flex-shrink:0;
-                             background:linear-gradient(135deg,#003d1a,#001a0a);
-                             border:2px solid #7dd8ff;
-                             display:flex;align-items:center;justify-content:center;
-                             font-size:1.2rem;">⚽</div>
-                <div style="flex:1;min-width:0;">
-                    <div style="font-family:'Rajdhani',sans-serif;font-weight:900;
-                                 font-size:1rem;color:#7dd8ff;letter-spacing:1px;">
-                        TW MM GROUP
+            <!-- Header -->
+            <div style="flex-shrink:0;padding:12px 14px 8px;background:rgba(8,0,20,0.98);
+                border-bottom:1px solid rgba(255,255,255,0.07);position:sticky;top:0;z-index:100;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:36px;height:36px;border-radius:10px;
+                        background:rgba(80,190,255,0.12);border:1.5px solid rgba(80,190,255,0.3);
+                        display:flex;align-items:center;justify-content:center;font-size:1.2rem;">💬</div>
+                    <div>
+                        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;
+                            font-size:1.1rem;color:#fff;letter-spacing:1px;">TW MM CHAT</div>
+                        <div style="font-size:0.62rem;color:rgba(255,255,255,0.35);letter-spacing:1px;">COMMUNITY</div>
                     </div>
-                    <div style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;
-                                 color:rgba(255,255,255,0.4);font-weight:600;">Community Chat</div>
-                </div>
-                <div style="display:flex;align-items:center;gap:5px;flex-shrink:0;">
-                    <span style="width:7px;height:7px;background:#7dd8ff;
-                                  border-radius:50%;display:inline-block;
-                                  box-shadow:0 0 6px #7dd8ff;
-                                  animation:pulse-dot 1.8s ease-in-out infinite;"></span>
-                    <span style="font-family:'Rajdhani',sans-serif;font-size:0.72rem;
-                                  color:#7dd8ff;font-weight:800;letter-spacing:1px;">LIVE</span>
                 </div>
             </div>
 
-            <!-- ② Reply Banner (fixed, just below header) -->
-            <div id="reply-banner"
-                 style="display:none;position:fixed;top:112px;left:0;right:0;z-index:199;
-                        background:rgba(0,20,10,0.95);
-                        border-bottom:1px solid rgba(80,190,255,0.2);
-                        padding:7px 16px;align-items:center;gap:8px;
-                        backdrop-filter:blur(8px);">
-                <div style="flex:1;border-left:3px solid #7dd8ff;padding-left:8px;">
-                    <div id="reply-to-name" style="font-family:'Rajdhani',sans-serif;
-                         font-size:0.7rem;color:#7dd8ff;font-weight:800;"></div>
-                    <div id="reply-to-text" style="font-family:'Rajdhani',sans-serif;
-                         font-size:0.8rem;color:rgba(255,255,255,0.38);white-space:nowrap;overflow:hidden;
-                         text-overflow:ellipsis;max-width:270px;"></div>
+            <!-- Posts List -->
+            <div id="posts-list" style="flex:1;overflow-y:auto;padding:10px 10px 8px;
+                display:flex;flex-direction:column;gap:6px;"></div>
+
+            <!-- Reply Banner -->
+            <div id="reply-banner" style="display:none;flex-shrink:0;
+                padding:6px 14px;background:rgba(80,190,255,0.08);
+                border-top:1px solid rgba(80,190,255,0.2);
+                display:none;align-items:center;justify-content:space-between;">
+                <div style="font-size:0.72rem;color:#7dd8ff;">
+                    <span style="opacity:0.6;">↩ Replying to </span>
+                    <span id="reply-name" style="font-weight:700;"></span>
                 </div>
-                <button onclick="cancelReply()"
-                    style="background:rgba(80,190,255,0.06);border:1px solid rgba(80,190,255,0.2);
-                           border-radius:50%;width:26px;height:26px;color:rgba(255,255,255,0.5);
-                           cursor:pointer;font-size:0.9rem;display:flex;
-                           align-items:center;justify-content:center;flex-shrink:0;">✕</button>
+                <button onclick="cancelReply()" style="background:none;border:none;
+                    color:rgba(255,255,255,0.4);cursor:pointer;font-size:1rem;">✕</button>
             </div>
 
-            <!-- ③ Scrollable Messages -->
-            <div id="posts-list"
-                 style="padding:8px 14px 16px;
-                        display:flex;flex-direction:column;gap:10px;
-                        /* top/bottom padding handled via margin-top/padding-bottom dynamically */">
-                <div class="loading"><div class="spinner"></div></div>
-            </div>
-
-            <!-- ④ Fixed Input Bar -->
-            <div id="comm-input-bar"
-                 style="position:fixed;bottom:var(--nav-h);left:0;right:0;z-index:200;
-                        background:rgba(8,0,20,0.98);border-top:1px solid rgba(255,255,255,0.08);
-                        padding:8px 12px;max-width:100%;">
+            <!-- Input Bar -->
+            <div id="comm-input-bar" style="flex-shrink:0;
+                background:rgba(8,0,20,0.98);border-top:1px solid rgba(255,255,255,0.08);
+                padding:8px 10px;">
                 ${user ? `
+                <!-- Media toolbar -->
+                <div id="media-toolbar" style="display:flex;gap:8px;margin-bottom:6px;">
+                    <!-- Photo button -->
+                    <label style="width:34px;height:34px;border-radius:10px;
+                        background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+                        display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                        <input type="file" accept="image/*" id="photo-input"
+                            style="display:none;" onchange="handlePhotoSelect(event)">
+                    </label>
+                    <!-- Voice button -->
+                    <button id="voice-btn" onclick="toggleVoiceRecord()"
+                        style="width:34px;height:34px;border-radius:10px;
+                        background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+                        display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                            <line x1="12" y1="19" x2="12" y2="23"/>
+                            <line x1="8" y1="23" x2="16" y2="23"/>
+                        </svg>
+                    </button>
+                    <!-- Photo preview -->
+                    <div id="photo-preview" style="display:none;align-items:center;gap:6px;
+                        background:rgba(80,190,255,0.08);border-radius:10px;padding:4px 10px;
+                        border:1px solid rgba(80,190,255,0.2);flex:1;">
+                        <span style="font-size:0.72rem;color:#7dd8ff;" id="photo-name"></span>
+                        <button onclick="clearPhoto()" style="background:none;border:none;
+                            color:rgba(255,255,255,0.4);cursor:pointer;margin-left:auto;">✕</button>
+                    </div>
+                    <!-- Recording indicator -->
+                    <div id="rec-indicator" style="display:none;align-items:center;gap:8px;
+                        background:rgba(248,113,113,0.1);border-radius:10px;padding:4px 12px;
+                        border:1px solid rgba(248,113,113,0.3);flex:1;">
+                        <div style="width:8px;height:8px;border-radius:50%;background:#f87171;
+                            animation:pulse 1s infinite;"></div>
+                        <span style="font-size:0.72rem;color:#f87171;" id="rec-timer">0:00</span>
+                        <button onclick="cancelVoice()" style="background:none;border:none;
+                            color:rgba(255,255,255,0.4);cursor:pointer;margin-left:auto;">✕</button>
+                    </div>
+                </div>
+
+                <!-- Text input row -->
                 <div style="display:flex;align-items:flex-end;gap:8px;">
                     <div style="width:30px;height:30px;border-radius:50%;flex-shrink:0;
-                                 background:rgba(80,190,255,0.12);
-                                 border:1.5px solid rgba(80,190,255,0.28);
-                                 display:flex;align-items:center;justify-content:center;
-                                 font-family:'Rajdhani',sans-serif;font-weight:900;
-                                 font-size:0.85rem;color:#7dd8ff;">${init}</div>
+                        background:rgba(80,190,255,0.12);border:1.5px solid rgba(80,190,255,0.28);
+                        display:flex;align-items:center;justify-content:center;
+                        font-family:'Rajdhani',sans-serif;font-weight:900;
+                        font-size:0.85rem;color:#7dd8ff;">${init}</div>
                     <textarea id="postInput" rows="1"
                         style="flex:1;background:rgba(255,255,255,0.07);color:#ffffff;
                                border:1px solid rgba(255,255,255,0.12);padding:9px 14px;
                                border-radius:20px;resize:none;max-height:90px;
                                font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;
-                               outline:none;transition:border 0.2s;line-height:1.4;
-                               overflow-y:auto;"
+                               outline:none;transition:border 0.2s;line-height:1.4;overflow-y:auto;"
                         placeholder="Message..."
                         onfocus="this.style.borderColor='rgba(80,190,255,0.5)'"
                         onblur="this.style.borderColor='rgba(255,255,255,0.12)'"
@@ -129,64 +160,230 @@ window.renderCommunity = async function() {
                 `}
             </div>
         </div>
-
-        <div id="modal-holder"></div>
-        <div id="reaction-picker"
-             style="display:none;position:fixed;z-index:5000;background:#1e1e1e;
-                    border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:10px 14px;
-                    gap:8px;box-shadow:0 8px 28px rgba(0,0,0,0.8);align-items:center;">
-        </div>
-
-        <style>
-            @keyframes pulse-dot {
-                0%,100% { opacity:1; transform:scale(1); }
-                50%      { opacity:0.5; transform:scale(0.7); }
-            }
-        </style>
     `;
 
-    // Calculate and apply dynamic spacing
-    _updateCommLayout();
     loadPosts();
+    _updateCommLayout();
 };
 
-// ── Dynamic layout spacing ─────────────────────────────────────────────────────
 function _updateCommLayout() {
-    // Wait for DOM
-    requestAnimationFrame(() => {
-        const header  = document.getElementById('comm-header');
-        const inputBar = document.getElementById('comm-input-bar');
-        const list    = document.getElementById('posts-list');
-        if (!header || !inputBar || !list) return;
+    const list    = document.getElementById('posts-list');
+    const inputBar = document.getElementById('comm-input-bar');
+    const banner   = document.getElementById('reply-banner');
+    if (!list || !inputBar) return;
+    const iH = inputBar.offsetHeight;
+    const bH = (banner && banner.style.display !== 'none') ? banner.offsetHeight : 0;
+    list.style.paddingBottom = (iH + bH + 8) + 'px';
+}
 
-        const hH = header.offsetHeight;   // ~62px
-        const iH = inputBar.offsetHeight; // ~56px
-        const navH = 68;
+function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 90) + 'px';
+}
 
-        list.style.marginTop    = (hH + 56) + 'px'; // 56 = app-header height
-        list.style.paddingBottom = (iH + navH + 16) + 'px';
+// ── Photo ─────────────────────────────────────────────────────
+var _selectedPhoto = null;
+
+window.handlePhotoSelect = function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    _selectedPhoto = file;
+    const prev = document.getElementById('photo-preview');
+    const name = document.getElementById('photo-name');
+    if (prev) prev.style.display = 'flex';
+    if (name) name.textContent = '📷 ' + file.name.substring(0, 20);
+};
+
+window.clearPhoto = function() {
+    _selectedPhoto = null;
+    const prev  = document.getElementById('photo-preview');
+    const input = document.getElementById('photo-input');
+    if (prev)  prev.style.display = 'none';
+    if (input) input.value = '';
+};
+
+async function compressPhoto(file) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+            // Max width = screen width * 2 (retina) — max 1200px
+            const maxW   = Math.min(window.innerWidth * 2, 1200);
+            const scale  = img.width > maxW ? maxW / img.width : 1;
+            const canvas = document.createElement('canvas');
+            canvas.width  = Math.round(img.width  * scale);
+            canvas.height = Math.round(img.height * scale);
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            URL.revokeObjectURL(url);
+            canvas.toBlob(blob => resolve(blob), 'image/jpeg', 0.75);
+        };
+        img.src = url;
     });
 }
 
-// ── Auto resize textarea ───────────────────────────────────────────────────────
-window.autoResize = function(el) {
-    el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 90) + 'px';
-    _updateCommLayout();
+async function uploadPhoto(file) {
+    const user       = auth.currentUser;
+    const compressed = await compressPhoto(file);
+    const path = `community/${user.uid}/${Date.now()}.jpg`;
+    const ref  = firebase.storage().ref(path);
+    await ref.put(compressed, { contentType: 'image/jpeg' });
+    return await ref.getDownloadURL();
+}
+
+// ── Voice ─────────────────────────────────────────────────────
+var _recInterval = null;
+var _recSeconds  = 0;
+var _audioBlob   = null;
+
+window.toggleVoiceRecord = async function() {
+    if (_isRecording) {
+        // Stop
+        _mediaRecorder && _mediaRecorder.stop();
+        return;
+    }
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        _audioChunks  = [];
+        _mediaRecorder = new MediaRecorder(stream);
+        _isRecording   = true;
+        _recSeconds    = 0;
+
+        // UI
+        const btn = document.getElementById('voice-btn');
+        const rec = document.getElementById('rec-indicator');
+        if (btn) btn.style.background = 'rgba(248,113,113,0.2)';
+        if (rec) rec.style.display = 'flex';
+
+        _recInterval = setInterval(() => {
+            _recSeconds++;
+            const t = document.getElementById('rec-timer');
+            if (t) t.textContent = Math.floor(_recSeconds/60) + ':' + String(_recSeconds%60).padStart(2,'0');
+            if (_recSeconds >= 120) window.toggleVoiceRecord(); // 2min max
+        }, 1000);
+
+        _mediaRecorder.ondataavailable = e => _audioChunks.push(e.data);
+        _mediaRecorder.onstop = async () => {
+            _isRecording = false;
+            clearInterval(_recInterval);
+            stream.getTracks().forEach(t => t.stop());
+
+            const btn = document.getElementById('voice-btn');
+            const rec = document.getElementById('rec-indicator');
+            if (btn) btn.style.background = 'rgba(255,255,255,0.06)';
+            if (rec) rec.style.display = 'none';
+
+            _audioBlob = new Blob(_audioChunks, { type: 'audio/webm' });
+            // Auto send
+            await sendVoiceMsg(_audioBlob, _recSeconds);
+            _audioBlob = null;
+        };
+
+        _mediaRecorder.start();
+    } catch(e) {
+        window.showToast('Microphone access မရဘူး', 'error');
+    }
 };
 
-// ── Reply ─────────────────────────────────────────────────────────────────────
-let _replyTo = null;
+window.cancelVoice = function() {
+    if (_mediaRecorder && _isRecording) {
+        _mediaRecorder.stop();
+        _audioBlob = null;
+    }
+    _isRecording = false;
+    clearInterval(_recInterval);
+    const btn = document.getElementById('voice-btn');
+    const rec = document.getElementById('rec-indicator');
+    if (btn) btn.style.background = 'rgba(255,255,255,0.06)';
+    if (rec) rec.style.display = 'none';
+};
 
+async function uploadVoice(blob) {
+    const user = auth.currentUser;
+    const path = `community/voice/${user.uid}_${Date.now()}.webm`;
+    const ref  = firebase.storage().ref(path);
+    await ref.put(blob);
+    return await ref.getDownloadURL();
+}
+
+async function sendVoiceMsg(blob, duration) {
+    const user = auth.currentUser;
+    if (!user) return;
+    try {
+        window.showToast('Sending voice...', 'info');
+        const url = await uploadVoice(blob);
+        const data = {
+            name:      _communityName,
+            uid:       user.uid,
+            message:   '',
+            audioUrl:  url,
+            audioDur:  duration,
+            reactions: {},
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        };
+        if (_replyTo) {
+            data.replyToId   = _replyTo.docId;
+            data.replyToName = _replyTo.name;
+            data.replyToText = _replyTo.text;
+        }
+        await db.collection('tw_posts').add(data);
+        cancelReply();
+    } catch(e) {
+        window.showToast('Voice send မရဘူး: ' + e.message, 'error');
+    }
+}
+
+// ── Save Post (text + optional photo) ─────────────────────────
+window.savePost = async function() {
+    const input = document.getElementById('postInput');
+    const text  = input?.value.trim();
+    const user  = auth.currentUser;
+    if (!text && !_selectedPhoto) return;
+    if (!user) return window.showToast('Login အရင်ဝင်ပါ', 'error');
+
+    const btn = document.querySelector('#comm-input-bar button[onclick="savePost()"]');
+    if (btn) btn.disabled = true;
+
+    try {
+        let imageUrl = null;
+        if (_selectedPhoto) {
+            window.showToast('Uploading photo...', 'info');
+            imageUrl = await uploadPhoto(_selectedPhoto);
+            clearPhoto();
+        }
+
+        const data = {
+            name:      _communityName,
+            uid:       user.uid,
+            message:   text || '',
+            reactions: {},
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        };
+        if (imageUrl) data.imageUrl = imageUrl;
+        if (_replyTo) {
+            data.replyToId   = _replyTo.docId;
+            data.replyToName = _replyTo.name;
+            data.replyToText = _replyTo.text;
+        }
+
+        if (input) { input.value = ''; input.style.height = 'auto'; }
+        cancelReply();
+        await db.collection('tw_posts').add(data);
+    } catch(e) {
+        window.showToast(e.message, 'error');
+    } finally {
+        if (btn) btn.disabled = false;
+    }
+};
+
+// ── Reply ─────────────────────────────────────────────────────
 window.setReply = function(docId, name, text) {
     _replyTo = { docId, name, text };
     const banner = document.getElementById('reply-banner');
-    if (banner) {
-        banner.style.display = 'flex';
-        document.getElementById('reply-to-name').textContent = '↩ ' + name;
-        document.getElementById('reply-to-text').textContent = text;
-        _updateCommLayout();
-    }
+    const rName  = document.getElementById('reply-name');
+    if (banner) banner.style.display = 'flex';
+    if (rName)  rName.textContent = name;
+    _updateCommLayout();
     document.getElementById('postInput')?.focus();
 };
 
@@ -197,39 +394,26 @@ window.cancelReply = function() {
     _updateCommLayout();
 };
 
-// ── Save Post ─────────────────────────────────────────────────────────────────
-window.savePost = function() {
-    const input = document.getElementById('postInput');
-    const text  = input?.value.trim();
-    const user  = auth.currentUser;
-    if (!text) return;
-    if (!user) return window.showToast("Login အရင်ဝင်ပါ","error");
-
-    const data = {
-        name:      _communityName,
-        uid:       user.uid,
-        message:   text,
-        reactions: {},
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    };
-    if (_replyTo) {
-        data.replyToId   = _replyTo.docId;
-        data.replyToName = _replyTo.name;
-        data.replyToText = _replyTo.text;
-    }
-
-    input.value = '';
-    input.style.height = 'auto';
-    cancelReply();
-
-    db.collection("tw_posts").add(data)
-      .catch(e => window.showToast(e.message,"error"));
+// ── Reactions ─────────────────────────────────────────────────
+window.toggleReaction = function(docId, emoji) {
+    const user = auth.currentUser;
+    if (!user) return window.showToast('Login အရင်ဝင်ပါ', 'error');
+    const ref = db.collection('tw_posts').doc(docId);
+    db.runTransaction(async tx => {
+        const doc  = await tx.get(ref);
+        const reax = doc.data().reactions || {};
+        const arr  = reax[emoji] || [];
+        const idx  = arr.indexOf(user.uid);
+        if (idx > -1) arr.splice(idx, 1); else arr.push(user.uid);
+        reax[emoji] = arr;
+        tx.update(ref, { reactions: reax });
+    });
 };
 
-// ── Load Posts ────────────────────────────────────────────────────────────────
+// ── Load Posts ────────────────────────────────────────────────
 function loadPosts() {
-    db.collection("tw_posts")
-      .orderBy("timestamp","asc")
+    db.collection('tw_posts')
+      .orderBy('timestamp', 'asc')
       .limit(80)
       .onSnapshot(snapshot => {
           const list = document.getElementById('posts-list');
@@ -239,8 +423,7 @@ function loadPosts() {
               list.innerHTML = `
                   <div style="text-align:center;padding:60px 20px;color:rgba(255,255,255,0.2);">
                       <div style="font-size:2.5rem;margin-bottom:10px;">💬</div>
-                      <div style="font-family:'Rajdhani',sans-serif;font-size:1rem;
-                                   font-weight:700;color:rgba(255,255,255,0.2);">
+                      <div style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;">
                           အရင်ဆုံး Message တင်လိုက်ပါ!
                       </div>
                   </div>`;
@@ -249,234 +432,173 @@ function loadPosts() {
 
           const myUid  = _communityUid;
           const EMOJIS = ['👍','❤️','😂','😮','🔥','🏆'];
-
-          const wasAtBottom = (() => {
-              const l = document.getElementById('posts-list');
-              if (!l) return true;
-              return l.scrollHeight - l.scrollTop - l.clientHeight < 140;
-          })();
+          const wasAtBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 140;
 
           list.innerHTML = snapshot.docs.map(doc => {
-              const p     = doc.data();
-              const docId = doc.id;
-              const isMe  = p.uid === myUid;
-              const init  = (p.name||'?').charAt(0).toUpperCase();
-              const time  = p.timestamp
-                  ? new Date(p.timestamp.seconds*1000)
-                      .toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
+              const p      = doc.data();
+              const docId  = doc.id;
+              const isMe   = p.uid === myUid;
+              const reax   = p.reactions || {};
+              const time   = p.timestamp
+                  ? new Date(p.timestamp.seconds * 1000)
+                      .toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'})
                   : '';
 
-              // Reactions
-              const reactions = p.reactions || {};
-              const reactionHtml = EMOJIS.map(e => {
-                  const users = reactions[e] || [];
-                  if (!users.length) return '';
-                  const mine = myUid && users.includes(myUid);
-                  return `<span onclick="toggleReaction('${docId}','${e}')"
-                      style="background:${mine?'rgba(80,190,255,0.15)':'#1e1e1e'};
-                             border:1px solid ${mine?'rgba(80,190,255,0.4)':'#2a2a2a'};
-                             border-radius:20px;padding:2px 8px;font-size:0.78rem;
-                             cursor:pointer;user-select:none;transition:0.15s;">${e} ${users.length}</span>`;
-              }).join('');
-
-              // Reply preview
-              const replyHtml = p.replyToName ? `
-                  <div style="border-left:3px solid rgba(80,190,255,0.5);padding:4px 10px;
-                               margin-bottom:6px;background:rgba(0,0,0,0.4);
-                               border-radius:0 6px 6px 0;">
-                      <div style="font-family:'Rajdhani',sans-serif;font-size:0.68rem;
-                                   color:#7dd8ff;font-weight:800;">
-                          ${escHtml(p.replyToName)}
-                      </div>
-                      <div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;
-                                   color:rgba(255,255,255,0.35);white-space:nowrap;overflow:hidden;
-                                   text-overflow:ellipsis;max-width:200px;">
-                          ${escHtml(p.replyToText||'')}
-                      </div>
+              // Reply quote
+              const replyHtml = p.replyToId ? `
+                  <div style="background:rgba(255,255,255,0.06);border-left:2px solid #7dd8ff;
+                      border-radius:6px;padding:5px 10px;margin-bottom:6px;
+                      font-size:0.72rem;color:rgba(255,255,255,0.5);">
+                      <span style="color:#7dd8ff;font-weight:700;">${escHtml(p.replyToName)}</span>
+                      <div style="margin-top:2px;">${escHtml((p.replyToText||'').substring(0,60))}${(p.replyToText||'').length>60?'…':''}</div>
                   </div>` : '';
 
-              const actionRow = `
-                  <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;
-                               margin-top:5px;${isMe?'justify-content:flex-end':''}">
-                      ${reactionHtml}
-                      <button onclick="showReactionPicker('${docId}',event)"
-                          style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
-                                 border-radius:20px;padding:2px 8px;cursor:pointer;
-                                 font-size:0.75rem;color:rgba(255,255,255,0.35);line-height:1.6;">+ 😊</button>
-                      <button onclick="setReply('${docId}','${escAttr(p.name)}','${escAttr(p.message)}')"
-                          style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.4);
-                                 font-family:'Rajdhani',sans-serif;font-size:0.75rem;
-                                 font-weight:800;padding:0 2px;">↩ Reply</button>
-                      ${isMe ? `
-                      <button onclick="deletePost('${docId}')"
-                          style="background:none;border:none;cursor:pointer;
-                                 color:rgba(255,255,255,0.2);padding:0 2px;">
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                               stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                              <polyline points="3 6 5 6 21 6"/>
-                              <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
-                              <path d="M10 11v6M14 11v6M9 6V4h6v2"/>
-                          </svg>
-                      </button>` : ''}
+              // Media
+              let mediaHtml = '';
+              if (p.imageUrl) {
+                  mediaHtml = `
+                      <div style="margin-bottom:6px;">
+                          <img src="${escAttr(p.imageUrl)}"
+                              style="max-width:220px;max-height:200px;border-radius:10px;
+                                     object-fit:cover;display:block;cursor:pointer;"
+                              onclick="window.open('${escAttr(p.imageUrl)}','_blank')">
+                      </div>`;
+              } else if (p.audioUrl) {
+                  const dur = p.audioDur || 0;
+                  const durStr = Math.floor(dur/60) + ':' + String(dur%60).padStart(2,'0');
+                  mediaHtml = `
+                      <div style="display:flex;align-items:center;gap:10px;
+                          background:rgba(255,255,255,0.06);border-radius:12px;
+                          padding:10px 14px;min-width:180px;margin-bottom:4px;">
+                          <button onclick="playAudio('${escAttr(p.audioUrl)}','${docId}')"
+                              style="width:32px;height:32px;border-radius:50%;
+                                     background:#7dd8ff;border:none;cursor:pointer;
+                                     display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                              <svg id="play-icon-${docId}" width="12" height="12" viewBox="0 0 24 24" fill="#000">
+                                  <polygon points="5 3 19 12 5 21 5 3"/>
+                              </svg>
+                          </button>
+                          <div style="flex:1;">
+                              <div style="font-size:0.72rem;color:rgba(255,255,255,0.6);">🎤 Voice</div>
+                              <div style="font-size:0.65rem;color:rgba(255,255,255,0.35);">${durStr}</div>
+                          </div>
+                      </div>`;
+              }
+
+              // Text
+              const textHtml = p.message ? `
+                  <div style="font-size:0.9rem;color:rgba(255,255,255,0.92);
+                      line-height:1.5;word-break:break-word;">${escHtml(p.message)}</div>` : '';
+
+              // Reactions
+              const reaxHtml = `
+                  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+                      ${EMOJIS.map(e => {
+                          const arr   = reax[e] || [];
+                          const count = arr.length;
+                          const mine  = arr.includes(myUid);
+                          return count > 0
+                              ? `<button onclick="toggleReaction('${docId}','${e}')"
+                                  style="background:${mine ? 'rgba(80,190,255,0.15)' : 'rgba(255,255,255,0.06)'};
+                                  border:1px solid ${mine ? 'rgba(80,190,255,0.4)' : 'rgba(255,255,255,0.1)'};
+                                  border-radius:20px;padding:2px 8px;cursor:pointer;
+                                  font-size:0.75rem;color:#fff;">${e} ${count}</button>`
+                              : '';
+                      }).join('')}
+                      <button onclick="showEmojiPicker('${docId}')"
+                          style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+                          border-radius:20px;padding:2px 8px;cursor:pointer;font-size:0.75rem;color:rgba(255,255,255,0.3);">＋</button>
                   </div>`;
 
-              if (isMe) {
-                  return `
-                  <div id="post-${docId}"
-                       style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
-                      <div style="font-family:'Rajdhani',sans-serif;font-size:0.65rem;
-                                   color:rgba(255,255,255,0.28);margin-right:4px;">${time}</div>
-                      <div style="max-width:80%;">
+              return `
+                  <div style="display:flex;flex-direction:column;
+                      align-items:${isMe ? 'flex-end' : 'flex-start'};">
+                      ${!isMe ? `<div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;
+                          font-size:0.72rem;color:#7dd8ff;margin-bottom:3px;
+                          padding-left:4px;">${escHtml(p.name)}</div>` : ''}
+                      <div style="max-width:78%;background:${isMe ? 'rgba(80,190,255,0.12)' : 'rgba(255,255,255,0.06)'};
+                          border:1px solid ${isMe ? 'rgba(80,190,255,0.2)' : 'rgba(255,255,255,0.08)'};
+                          border-radius:${isMe ? '16px 4px 16px 16px' : '4px 16px 16px 16px'};
+                          padding:10px 12px;position:relative;">
                           ${replyHtml}
-                          <div style="background:linear-gradient(135deg,rgba(80,190,255,0.28),rgba(120,70,220,0.32));color:#ffffff;padding:10px 14px;
-                                       border-radius:18px 4px 18px 18px;border:1px solid rgba(80,190,255,0.35);font-size:0.92rem;
-                                       font-family:'Barlow Condensed',sans-serif;
-                                       line-height:1.5;word-break:break-word;">
-                              ${escHtml(p.message)}
+                          ${mediaHtml}
+                          ${textHtml}
+                          <div style="display:flex;align-items:center;justify-content:flex-end;
+                              gap:8px;margin-top:4px;">
+                              <span style="font-size:0.58rem;color:rgba(255,255,255,0.25);">${time}</span>
+                              <button onclick="setReply('${docId}','${escAttr(p.name)}','${escAttr(p.message||'🎤')}')"
+                                  style="background:none;border:none;cursor:pointer;
+                                  font-size:0.65rem;color:rgba(255,255,255,0.25);padding:0;">↩</button>
+                              ${isMe ? `<button onclick="deletePost('${docId}','${escAttr(p.audioUrl||'')}','${escAttr(p.imageUrl||'')}')"
+                                  style="background:none;border:none;cursor:pointer;
+                                  font-size:0.65rem;color:rgba(248,113,113,0.4);padding:0;">🗑</button>` : ''}
                           </div>
                       </div>
-                      ${actionRow}
+                      ${reaxHtml}
                   </div>`;
-              } else {
-                  return `
-                  <div id="post-${docId}" style="display:flex;align-items:flex-start;gap:8px;">
-                      <div style="width:30px;height:30px;border-radius:50%;flex-shrink:0;
-                                   background:rgba(80,190,255,0.15);border:1.5px solid rgba(80,190,255,0.3);
-                                   display:flex;align-items:center;justify-content:center;
-                                   font-family:'Rajdhani',sans-serif;font-weight:900;
-                                   font-size:0.82rem;color:#7dd8ff;">${init}</div>
-                      <div style="max-width:80%;">
-                          <div style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;
-                                       color:#7dd8ff;font-weight:800;margin-bottom:3px;">
-                              ${escHtml(p.name)}
-                              <span style="color:rgba(255,255,255,0.3);font-weight:600;">· ${time}</span>
-                          </div>
-                          ${replyHtml}
-                          <div style="background:rgba(255,255,255,0.07);color:#ffffff;padding:10px 14px;
-                                       border-radius:4px 18px 18px 18px;font-size:0.92rem;
-                                       font-family:'Barlow Condensed',sans-serif;
-                                       line-height:1.5;word-break:break-word;
-                                       border:1px solid #242424;">
-                              ${escHtml(p.message)}
-                          </div>
-                          ${actionRow}
-                      </div>
-                  </div>`;
-              }
           }).join('');
 
-          if (wasAtBottom) {
-              setTimeout(() => {
-                  const l = document.getElementById('posts-list');
-                  if (l) l.scrollTop = l.scrollHeight;
-              }, 50);
-          }
+          if (wasAtBottom) list.scrollTop = list.scrollHeight;
       });
 }
 
-// ── Reaction Picker ───────────────────────────────────────────────────────────
-const _EMOJIS = ['👍','❤️','😂','😮','🔥','🏆'];
-
-window.showReactionPicker = function(docId, event) {
-    if (!_communityUid) return window.showToast("Login ဝင်ပါ","error");
-    event.stopPropagation();
-    const picker = document.getElementById('reaction-picker');
-    if (!picker) return;
-
-    picker.style.display = 'flex';
-    picker.innerHTML = _EMOJIS.map(e =>
-        `<span onclick="toggleReaction('${docId}','${e}');hidePicker();"
-               style="font-size:1.5rem;cursor:pointer;padding:3px 5px;
-                      border-radius:8px;user-select:none;transition:0.12s;"
-               onmouseover="this.style.background='rgba(255,255,255,0.1)'"
-               onmouseout="this.style.background=''">${e}</span>`
-    ).join('');
-
-    const rect = event.target.getBoundingClientRect();
-    const left = Math.min(rect.left, window.innerWidth - 250);
-    const top  = rect.top - 68;
-    picker.style.left = left + 'px';
-    picker.style.top  = top + 'px';
-
-    setTimeout(() => document.addEventListener('click', hidePicker, {once:true}), 10);
+// ── Delete Post ──────────────────────────────────────────────
+window.deletePost = async function(docId, audioUrl, imageUrl) {
+    if (!confirm('Message ဖျက်မှာ သေချာလား?')) return;
+    try {
+        // Storage file ပါ ဖျက်
+        if (audioUrl) {
+            try { await firebase.storage().refFromURL(audioUrl).delete(); } catch(e) {}
+        }
+        if (imageUrl) {
+            try { await firebase.storage().refFromURL(imageUrl).delete(); } catch(e) {}
+        }
+        await db.collection('tw_posts').doc(docId).delete();
+        window.showToast('ဖျက်ပြီးပါပြီ', 'success');
+    } catch(e) {
+        window.showToast('ဖျက်မရဘူး: ' + e.message, 'error');
+    }
 };
 
-window.hidePicker = function() {
-    const p = document.getElementById('reaction-picker');
-    if (p) p.style.display = 'none';
+// ── Emoji Picker ──────────────────────────────────────────────
+window.showEmojiPicker = function(docId) {
+    const EMOJIS = ['👍','❤️','😂','😮','🔥','🏆'];
+    const existing = document.getElementById('emoji-picker');
+    if (existing) existing.remove();
+
+    const picker = document.createElement('div');
+    picker.id = 'emoji-picker';
+    picker.style.cssText = `position:fixed;bottom:120px;left:50%;transform:translateX(-50%);
+        background:#1a0030;border:1px solid rgba(255,255,255,0.15);border-radius:16px;
+        padding:12px;display:flex;gap:10px;z-index:999;
+        box-shadow:0 8px 32px rgba(0,0,0,0.5);`;
+    picker.innerHTML = EMOJIS.map(e =>
+        `<button onclick="toggleReaction('${docId}','${e}');document.getElementById('emoji-picker').remove();"
+            style="background:none;border:none;cursor:pointer;font-size:1.4rem;">${e}</button>`
+    ).join('') + `<button onclick="this.parentElement.remove()"
+        style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.3);font-size:1rem;">✕</button>`;
+
+    document.body.appendChild(picker);
+    setTimeout(() => picker.remove(), 5000);
 };
 
-window.toggleReaction = function(docId, emoji) {
-    if (!_communityUid) return window.showToast("Login ဝင်ပါ","error");
-    const ref = db.collection("tw_posts").doc(docId);
-    ref.get().then(snap => {
-        if (!snap.exists) return;
-        const reactions = snap.data().reactions || {};
-        const users = reactions[emoji] || [];
-        reactions[emoji] = users.includes(_communityUid)
-            ? users.filter(u => u !== _communityUid)
-            : [...users, _communityUid];
-        ref.update({ reactions });
-    });
+// ── Audio Playback ────────────────────────────────────────────
+var _currentAudio = null;
+
+window.playAudio = function(url, docId) {
+    if (_currentAudio) {
+        _currentAudio.pause();
+        _currentAudio = null;
+    }
+    const audio = new Audio(url);
+    _currentAudio = audio;
+
+    const icon = document.getElementById('play-icon-' + docId);
+    if (icon) icon.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+
+    audio.onended = () => {
+        if (icon) icon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+        _currentAudio = null;
+    };
+    audio.play().catch(e => window.showToast('Playback error', 'error'));
 };
-
-// ── Delete Post — Toast Confirm (no browser alert) ────────────────────────────
-window.deletePost = function(docId) {
-    if (!_communityUid) return;
-
-    // Custom toast confirm — no browser alert
-    const holder = document.getElementById('modal-holder');
-    if (!holder) return;
-
-    holder.innerHTML = `
-        <div style="position:fixed;inset:0;background:rgba(0,0,0,0.7);
-                     backdrop-filter:blur(6px);z-index:4000;
-                     display:flex;align-items:flex-end;justify-content:center;
-                     padding-bottom:calc(var(--nav-h) + 16px);"
-             onclick="this.parentElement.innerHTML=''">
-            <div onclick="event.stopPropagation()"
-                 style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
-                        border-radius:18px 18px 14px 14px;
-                        width:92%;max-width:380px;overflow:hidden;
-                        box-shadow:0 -4px 30px rgba(0,0,0,0.6);">
-                <div style="padding:18px 20px 14px;text-align:center;
-                             border-bottom:1px solid rgba(255,255,255,0.08);">
-                    <div style="font-size:1.8rem;margin-bottom:8px;">🗑️</div>
-                    <div style="font-family:'Rajdhani',sans-serif;font-weight:900;
-                                 font-size:1rem;color:var(--text);">Post ဖျက်မှာလား?</div>
-                    <div style="font-family:'Rajdhani',sans-serif;font-size:0.8rem;
-                                 color:rgba(255,255,255,0.4);margin-top:4px;">ဖျက်ပြီးရင် ပြန်မရနိုင်ပါ</div>
-                </div>
-                <div style="display:flex;">
-                    <button onclick="document.getElementById('modal-holder').innerHTML=''"
-                        style="flex:1;padding:16px;background:none;border:none;
-                               border-right:1px solid rgba(255,255,255,0.08);cursor:pointer;
-                               font-family:'Rajdhani',sans-serif;font-weight:800;
-                               font-size:0.95rem;color:rgba(255,255,255,0.5);">Cancel</button>
-                    <button onclick="_confirmDelete('${docId}')"
-                        style="flex:1;padding:16px;background:none;border:none;
-                               cursor:pointer;font-family:'Rajdhani',sans-serif;
-                               font-weight:900;font-size:0.95rem;color:#ff4d4d;">
-                        Delete
-                    </button>
-                </div>
-            </div>
-        </div>`;
-};
-
-window._confirmDelete = function(docId) {
-    document.getElementById('modal-holder').innerHTML = '';
-    db.collection("tw_posts").doc(docId).delete()
-      .then(() => window.showToast("Post ဖျက်ပြီးပါပြီ ✅","success"))
-      .catch(e => window.showToast(e.message,"error"));
-};
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function escHtml(str) {
-    return String(str||'')
-        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function escAttr(str) {
-    return String(str||'').replace(/'/g,"\\'").substring(0,80);
-}
