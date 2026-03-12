@@ -16,11 +16,15 @@ window.openRegisterModal = async function(type) {
     const cfg = FEE[type];
     if (!cfg) return;
 
-    // ── Check registration open/close from Firebase ──
+    // ── Check open/close + get current GW/Season ──
+    let currentGw = 30;
+    let currentSeason = 13;
     try {
         const cfgDoc = await db.collection("tw_config").doc("settings").get();
         if (cfgDoc.exists) {
             const s = cfgDoc.data();
+            currentGw     = s.current_gw     ?? 30;
+            currentSeason = s.current_season ?? 13;
             const openField = type === 'weekly' ? 'weekly_open' : 'cup_open';
             if (s[openField] === false) {
                 window.showToast(
@@ -31,6 +35,8 @@ window.openRegisterModal = async function(type) {
             }
         }
     } catch(e) { /* config မရရင် ဆက်သွားတယ် */ }
+    // GW/Season label
+    const regLabel = type === 'weekly' ? \`GW\${currentGw}\` : \`Season \${currentSeason}\`;
 
     // Load latest user data
     let userData = {};
@@ -73,7 +79,7 @@ window.openRegisterModal = async function(type) {
                         </svg>
                     </div>
                     <h3 style="font-family:'Rajdhani',sans-serif; font-size:1.2rem; font-weight:700; color:${cfg.color}; letter-spacing:1px;">${cfg.label}</h3>
-                    <p style="font-family:'Share Tech Mono',monospace; font-size:0.62rem; color:var(--dim); letter-spacing:1px; margin-top:4px;">SEASON REGISTRATION</p>
+                    <p style="font-family:'Barlow Condensed',sans-serif; font-size:0.75rem; color:var(--cyan); letter-spacing:2px; font-weight:700; margin-top:4px;">${regLabel} REGISTRATION</p>
                 </div>
 
                 <!-- Fee Info -->
@@ -159,6 +165,16 @@ window.confirmRegister = async function(type) {
     const btn = document.getElementById('confirm-reg-btn');
     if (btn) { btn.disabled = true; btn.innerText = 'Processing...'; }
 
+    // Get current GW/Season
+    let currentGw = 30, currentSeason = 13;
+    try {
+        const cfgDoc = await db.collection("tw_config").doc("settings").get();
+        if (cfgDoc.exists) {
+            currentGw     = cfgDoc.data().current_gw     ?? 30;
+            currentSeason = cfgDoc.data().current_season ?? 13;
+        }
+    } catch(e) {}
+
     try {
         // Load fresh data
         const docRef = db.collection("users").doc(user.uid);
@@ -195,7 +211,10 @@ window.confirmRegister = async function(type) {
             });
 
             // Registration log — Admin မြင်ရန် + Members list ပြရန်
-            tx.set(db.collection("tw_registrations").doc(`${type}_${user.uid}`), {
+            const regId = type === 'weekly'
+                ? \`weekly_\${user.uid}_gw\${currentGw}\`
+                : \`cup_\${user.uid}_s\${currentSeason}\`;
+            tx.set(db.collection("tw_registrations").doc(regId), {
                 uid:          user.uid,
                 manager_name: data.manager_name || '',
                 team_name:    data.team_name    || '',
@@ -205,6 +224,8 @@ window.confirmRegister = async function(type) {
                 coins:        cfg.coins,
                 mmk:          cfg.mmk,
                 status:       "confirmed",
+                gw:           type === 'weekly' ? currentGw : null,
+                season:       type === 'cup'    ? currentSeason : null,
                 registered_at: firebase.firestore.FieldValue.serverTimestamp(),
             });
         });
