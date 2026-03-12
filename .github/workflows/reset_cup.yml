@@ -1,13 +1,20 @@
 name: Reset Cup Registration
 
 on:
-  workflow_dispatch:     # Manual run — Season end (GW35 ပြီး) မှ run
+  workflow_dispatch:
+    inputs:
+      season_number:
+        description: 'Next Season number (e.g. 14)'
+        required: false
+        default: ''
 
 jobs:
   reset:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: '3.11'
@@ -15,4 +22,9 @@ jobs:
       - name: Reset Cup
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: python scripts/reset_registration.py --type cup
+        run: |
+          if [ -n "${{ github.event.inputs.season_number }}" ]; then
+            python scripts/reset_registration.py --type cup --season ${{ github.event.inputs.season_number }}
+          else
+            python scripts/reset_registration.py --type cup
+          fi

@@ -2,6 +2,11 @@ name: Reset Weekly Registration
 
 on:
   workflow_dispatch:
+    inputs:
+      gw_number:
+        description: 'Next GW number (e.g. 31)'
+        required: false
+        default: ''
 
 jobs:
   reset:
@@ -17,4 +22,9 @@ jobs:
       - name: Reset Weekly
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: python scripts/reset_registration.py --type weekly
+        run: |
+          if [ -n "${{ github.event.inputs.gw_number }}" ]; then
+            python scripts/reset_registration.py --type weekly --gw ${{ github.event.inputs.gw_number }}
+          else
+            python scripts/reset_registration.py --type weekly
+          fi
