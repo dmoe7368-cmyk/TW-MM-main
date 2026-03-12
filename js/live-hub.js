@@ -4,24 +4,76 @@
  */
 
 function renderPlayoffScore(pts, hit, chip) {
-    var tags = '';
-    if (hit > 0)
-        tags += '<span style="color:#f87171;font-size:0.68rem;font-weight:700;margin-left:4px;">(-' + hit + ')</span>';
-
+    // chip badge
     var chipTag = '';
     if (chip === '3xc')
-        chipTag = '<div style="background:#facc15;color:#000;font-size:0.55rem;padding:1px 5px;border-radius:3px;font-weight:900;margin-top:2px;display:inline-block;">TC</div>';
+        chipTag = '<div style="background:#facc15;color:#000;font-size:0.55rem;padding:1px 6px;border-radius:3px;font-weight:900;margin-top:2px;display:inline-block;">TC</div>';
     else if (chip === 'bboost')
-        chipTag = '<div style="background:#a78bfa;color:#000;font-size:0.55rem;padding:1px 5px;border-radius:3px;font-weight:900;margin-top:2px;display:inline-block;">BB</div>';
+        chipTag = '<div style="background:#a78bfa;color:#000;font-size:0.55rem;padding:1px 6px;border-radius:3px;font-weight:900;margin-top:2px;display:inline-block;">BB</div>';
     else if (chip === 'freehit')
-        chipTag = '<div style="background:#7dd8ff;color:#000;font-size:0.55rem;padding:1px 5px;border-radius:3px;font-weight:900;margin-top:2px;display:inline-block;">FH</div>';
+        chipTag = '<div style="background:#7dd8ff;color:#000;font-size:0.55rem;padding:1px 6px;border-radius:3px;font-weight:900;margin-top:2px;display:inline-block;">FH</div>';
     else if (chip === 'wildcard')
-        chipTag = '<div style="background:#c4a0ff;color:#000;font-size:0.55rem;padding:1px 5px;border-radius:3px;font-weight:900;margin-top:2px;display:inline-block;">WC</div>';
+        chipTag = '<div style="background:#c4a0ff;color:#000;font-size:0.55rem;padding:1px 6px;border-radius:3px;font-weight:900;margin-top:2px;display:inline-block;">WC</div>';
+
+    // hit badge
+    var hitTag = hit > 0
+        ? '<span style="color:#f87171;font-size:0.65rem;font-weight:700;margin-left:4px;">-' + hit + '</span>'
+        : '';
 
     return '<div style="display:flex;flex-direction:column;align-items:flex-end;">'
         + '<div style="display:flex;align-items:center;">'
-        + '<span style="font-weight:900;color:#7dd8ff;font-family:\'Barlow Condensed\',sans-serif;font-size:1.3rem;">' + (pts !== undefined && pts !== null ? pts : '—') + '</span>' + tags
-        + '</div>' + chipTag
+        + '<span style="font-weight:900;color:#7dd8ff;font-family:\'Barlow Condensed\',sans-serif;font-size:1.3rem;">'
+        + (pts !== undefined && pts !== null ? pts : '—') + '</span>'
+        + hitTag
+        + '</div>'
+        + chipTag
+        + '</div>';
+}
+
+// Tiebreak row helper
+function renderTiebreak(m) {
+    if (m.home_pts === undefined || m.away_pts === undefined) return '';
+    if (m.home_pts !== m.away_pts) return '';
+
+    // pts တူမှ tiebreak ပြ
+    var rows = '';
+
+    function tbRow(icon, label, hVal, aVal) {
+        var hv = hVal || 0, av = aVal || 0;
+        var result = hv > av ? '← Home' : hv < av ? 'Away →' : 'TIE';
+        var rColor = hv > av ? '#7dd8ff' : hv < av ? '#c4a0ff' : '#fbbf24';
+        return '<div style="display:flex;justify-content:space-between;align-items:center;'
+            + 'padding:5px 10px;border-radius:7px;background:rgba(255,255,255,0.04);margin-bottom:4px;">'
+            + '<span style="font-family:\'Barlow Condensed\',sans-serif;font-size:0.72rem;'
+            + 'color:rgba(255,255,255,0.5);font-weight:700;">' + icon + ' ' + label + '</span>'
+            + '<div style="display:flex;align-items:center;gap:10px;">'
+            + '<span style="font-family:\'Barlow Condensed\',sans-serif;font-size:0.85rem;'
+            + 'font-weight:900;color:#7dd8ff;">' + hv + '</span>'
+            + '<span style="font-size:0.6rem;color:rgba(255,255,255,0.25);">vs</span>'
+            + '<span style="font-family:\'Barlow Condensed\',sans-serif;font-size:0.85rem;'
+            + 'font-weight:900;color:#c4a0ff;">' + av + '</span>'
+            + '<span style="font-family:\'Barlow Condensed\',sans-serif;font-size:0.72rem;'
+            + 'font-weight:900;color:' + rColor + ';min-width:44px;text-align:right;">' + result + '</span>'
+            + '</div></div>';
+    }
+
+    rows += tbRow('👑', 'CAP',  m.home_cap_pts,  m.away_cap_pts);
+
+    // cap ပဲ တူရင် vcap ပြ
+    if ((m.home_cap_pts || 0) === (m.away_cap_pts || 0)) {
+        rows += tbRow('🥈', 'VCAP', m.home_vcap_pts, m.away_vcap_pts);
+
+        // vcap လဲ တူရင် GK ပြ
+        if ((m.home_vcap_pts || 0) === (m.away_vcap_pts || 0)) {
+            rows += tbRow('🥅', 'GK',   m.home_gk_pts,  m.away_gk_pts);
+        }
+    }
+
+    return '<div style="margin-top:8px;padding:8px;border-radius:9px;'
+        + 'border:1px solid rgba(251,191,36,0.25);background:rgba(251,191,36,0.04);">'
+        + '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:0.6rem;'
+        + 'color:#fbbf24;letter-spacing:2px;font-weight:900;margin-bottom:6px;">⚖️ TIEBREAKER</div>'
+        + rows
         + '</div>';
 }
 
@@ -148,6 +200,9 @@ function loadFACupBracket() {
                     + (m.away_pts !== undefined ? renderPlayoffScore(m.away_pts, m.away_hit || 0, m.away_chip)
                        : '<span style="color:rgba(255,255,255,0.2);font-family:\'Barlow Condensed\',sans-serif;font-size:1rem;">0</span>')
                     + '</div>';
+
+                // Tiebreak row
+                if (m.home_pts !== undefined) html += renderTiebreak(m);
 
                 html += '</div>'; // card
             }
