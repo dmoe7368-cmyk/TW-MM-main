@@ -63,7 +63,7 @@ function buildFeeStatus(d) {
         <div class="reg-grid">
             ${weekPaid
                 ? `<div class="reg-btn weekly" style="opacity:0.7;cursor:default;border:2px solid rgba(80,190,255,0.8);background:rgba(80,190,255,0.08);">
-                    <span class="reg-btn-icon" style="color:#7dd8ff;">✅</span>
+                    <span class="reg-btn-icon" style="color:#7dd8ff;">💳</span>
                     <div style="flex:1;min-width:0;text-align:left;">
                         <span class="reg-btn-label" style="color:rgba(125,216,255,0.6);">REGISTERED</span>
                         <span class="reg-btn-name" style="color:#7dd8ff;">Weekly</span>
@@ -84,7 +84,7 @@ function buildFeeStatus(d) {
                    </button>`}
             ${cupPaid
                 ? `<div class="reg-btn cup" style="opacity:0.7;cursor:default;border:2px solid rgba(196,160,255,0.8);background:rgba(196,160,255,0.08);">
-                    <span class="reg-btn-icon" style="color:#c4a0ff;">✅</span>
+                    <span class="reg-btn-icon" style="color:#c4a0ff;">🪙</span>
                     <div style="flex:1;min-width:0;text-align:left;">
                         <span class="reg-btn-label" style="color:rgba(196,160,255,0.6);">REGISTERED</span>
                         <span class="reg-btn-name" style="color:#c4a0ff;">Cup</span>
