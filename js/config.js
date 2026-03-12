@@ -14,7 +14,6 @@ firebase.initializeApp(firebaseConfig);
 
 const db      = firebase.firestore();
 const auth    = firebase.auth();
-const storage = firebase.storage();  // ← Photo/Voice upload
 
 // 🔗 Admin Contact Links
 window.TW_CONTACTS = {
