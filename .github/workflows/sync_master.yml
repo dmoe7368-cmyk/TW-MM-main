@@ -1,4 +1,4 @@
-name: Master Data Setup (Robot A)
+name: Master Data Setup (Robot B)
 
 on:
   workflow_dispatch:   # Manual run
