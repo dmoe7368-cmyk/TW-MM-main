@@ -1,0 +1,30 @@
+name: Reset FA Match
+
+on:
+  workflow_dispatch:
+    inputs:
+      match_id:
+        description: 'Match ID (e.g. R16_01, QF_02) — အကုန်ဆိုရင် "all" ရိုက်ပါ'
+        required: true
+        default: 'R16_01'
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - run: pip install firebase-admin
+      - name: Reset FA Match
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ "${{ github.event.inputs.match_id }}" = "all" ]; then
+            python scripts/reset_fa_match.py --all
+          else
+            python scripts/reset_fa_match.py --match ${{ github.event.inputs.match_id }}
+          fi
