@@ -1,0 +1,38 @@
+name: Master Data Setup (Robot A)
+
+on:
+  workflow_dispatch:   # Manual run
+
+  schedule:
+    - cron: '0 3 * * 6'    # Saturday  09:30 MMT
+    - cron: '0 6 * * 6'    # Saturday  12:30 MMT
+    - cron: '0 4 * * 0'    # Sunday    10:30 MMT
+    - cron: '30 23 * * 0'  # Monday    06:00 MMT (Sunday UTC)
+    - cron: '30 23 * * 2'  # Wednesday 06:00 MMT (Tuesday UTC)
+
+jobs:
+  setup-master:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests firebase_admin
+
+      - name: Run Master Sync
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: python scripts/sync_master.py
+
+      - name: Run Scout Sync
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: python scripts/sync_scouts.py
