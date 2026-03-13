@@ -32,7 +32,11 @@ db = initialize_firebase()
 # ══════════════════════════════════════════
 LEAGUE_ID          = "184965"
 FPL_API            = "https://fantasy.premierleague.com/api/"
-GW_RANGE           = range(29, 36)
+# ── GW Range — ဒီနေရာပဲ ပြောင်းပါ ──────────────────────────
+GW_START = 29   # Season စတင်သည့် GW — မပြောင်းရ
+GW_END   = 30   # ← GW ပြီးတိုင်း ဒါပဲ တစ်ခု တက်ချိန်းပါ
+GW_RANGE = range(GW_START, GW_END + 1)
+# ──────────────────────────────────────────────────────────
 MANUAL_NEW_ENTRIES = ["561639", "6993087"]
 HEADERS            = {"User-Agent": "Mozilla/5.0"}
 
