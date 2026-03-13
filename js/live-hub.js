@@ -154,10 +154,15 @@ function loadFACupBracket() {
             for (var i = 1; i <= stage.count; i++) {
                 var matchId  = stage.key + '_' + (i < 10 ? '0' + i : '' + i);
                 var m        = stageMatches.find(function(x){ return x.match_id === matchId; }) || {};
-                var isLive   = m.status === 'live';
-                var isDone   = m.status === 'done';
-                var homeWon  = isDone && m.winner && m.winner === m.home_name;
-                var awayWon  = isDone && m.winner && m.winner === m.away_name;
+                var statusLow = (m.status || '').toLowerCase().trim();
+                var isLive   = statusLow === 'live';
+                var isDone   = statusLow === 'done' || statusLow === 'complete' || statusLow === 'finished';
+                // winner — trim + lowercase compare ဖြင့် spelling မှားမှာ မစိုးရိမ်ရ
+                var winnerLow   = (m.winner   || '').toLowerCase().trim();
+                var homeNameLow = (m.home_name || '').toLowerCase().trim();
+                var awayNameLow = (m.away_name || '').toLowerCase().trim();
+                var homeWon  = isDone && winnerLow && winnerLow === homeNameLow;
+                var awayWon  = isDone && winnerLow && winnerLow === awayNameLow;
 
                 var cardBdr  = isLive  ? 'rgba(248,113,113,0.55)'
                              : isFinal ? 'rgba(251,191,36,0.35)'
