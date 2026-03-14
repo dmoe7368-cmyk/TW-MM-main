@@ -24,7 +24,7 @@ db      = initialize_firebase()
 FPL_API = "https://fantasy.premierleague.com/api/"
 
 # ── GW Number ကိုဒီမှာပဲ ချိန်းပါ ──────────────────────────────
-TARGET_GW = 30   # ← GW ပြောင်းတိုင်း ဒီနေရာပဲ ပြောင်းပါ
+TARGET_GW = 32   # ← GW ပြောင်းတိုင်း ဒီနေရာပဲ ပြောင်းပါ
 # ──────────────────────────────────────────────────────────────
 
 def get_live_pts_map(gw_num):
@@ -107,8 +107,9 @@ def sync_playoff_points():
         m      = doc.to_dict()
         doc_id = doc.id
 
-        if m.get('status','').lower() == 'complete':
-            print(f"⏩ {doc_id} complete — skip")
+        status_low = m.get('status','').lower().strip()
+        if status_low in ('complete','done','finished'):
+            print(f"⏩ {doc_id} [{status_low}] — skip")
             continue
 
         h_id = m.get('home_id')
