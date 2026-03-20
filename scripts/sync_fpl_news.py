@@ -80,7 +80,14 @@ POS_MAP       = {1:"GKP", 2:"DEF", 3:"MID", 4:"FWD"}
 
 current_gw = next((e for e in events if e.get("is_current")), None)
 next_gw    = next((e for e in events if e.get("is_next")),    None)
-gw_num     = (next_gw or current_gw or {}).get("id", 29)
+
+# ── GW Override — YAML မှာ GW_OVERRIDE env ထည့်ရင် အဲဒါသုံး ──
+_override = os.environ.get("GW_OVERRIDE", "").strip()
+if _override and _override.isdigit():
+    gw_num = int(_override)
+    print(f"⚙️  GW Override: {gw_num}")
+else:
+    gw_num = (next_gw or current_gw or {}).get("id", 29)
 
 print(f"Current GW: {current_gw['id'] if current_gw else 'None'}")
 print(f"Next GW:    {next_gw['id']    if next_gw    else 'None'}")
@@ -336,15 +343,30 @@ news_ref.document(f"scout_fixture_gw{gw_num}").set({
 print(f"✅ Saved: scout_fixture_gw{gw_num}")
 
 # ══════════════════════════════════════════
-#  Cleanup old GW docs (keep 5)
+#  Cleanup — current GW ပဲ ထား၊ ဟောင်းတာ ဖျက်
 # ══════════════════════════════════════════
+all_docs = list(news_ref.stream())
+
+# fpl_gw_ — current GW ပဲ ထား
 gw_docs = sorted(
-    [d for d in news_ref.stream() if d.id.startswith("fpl_gw_")],
+    [d for d in all_docs if d.id.startswith("fpl_gw_")],
     key=lambda d: d.to_dict().get("gw_id", 0), reverse=True
 )
 for i, doc in enumerate(gw_docs):
-    if i >= 5 and doc.to_dict().get("finished", False):
+    if i >= 1:  # latest 1 ပဲ ထား
         doc.reference.delete()
-        print(f"🗑️  Deleted: {doc.id}")
+        print(f"🗑️  Deleted old: {doc.id}")
+
+# scout_ — current GW ပဲ ထား
+scout_prefixes = ["scout_captain_gw", "scout_diff_gw", "scout_fixture_gw"]
+for prefix in scout_prefixes:
+    s_docs = sorted(
+        [d for d in all_docs if d.id.startswith(prefix)],
+        key=lambda d: d.to_dict().get("gw_id", 0), reverse=True
+    )
+    for i, doc in enumerate(s_docs):
+        if i >= 1:  # latest 1 ပဲ ထား
+            doc.reference.delete()
+            print(f"🗑️  Deleted old: {doc.id}")
 
 print("\n✨ sync_fpl_news.py complete!")
