@@ -1,0 +1,26 @@
+name: Sync FPL News & Scout
+
+on:
+  workflow_dispatch:
+    inputs:
+      gw_override:
+        description: 'GW number override (e.g. 31) — blank ဆိုရင် FPL API auto detect'
+        required: false
+        default: ''
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - run: pip install firebase-admin requests
+      - name: Sync FPL News
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GW_OVERRIDE: ${{ github.event.inputs.gw_override }}
+        run: python scripts/sync_fpl_news.py
