@@ -34,7 +34,7 @@ LEAGUE_ID          = "184965"
 FPL_API            = "https://fantasy.premierleague.com/api/"
 # ── GW Range — ဒီနေရာပဲ ပြောင်းပါ ──────────────────────────
 GW_START = 29   # Season စတင်သည့် GW — မပြောင်းရ
-GW_END   = 33   # ← GW ပြီးတိုင်း ဒါပဲ တစ်ခု တက်ချိန်းပါ
+GW_END   = 34   # ← GW ပြီးတိုင်း ဒါပဲ တစ်ခု တက်ချိန်းပါ
 GW_RANGE = range(GW_START, GW_END + 1)
 # ──────────────────────────────────────────────────────────
 MANUAL_NEW_ENTRIES = ["561639", "6993087"]
