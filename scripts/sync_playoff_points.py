@@ -24,7 +24,7 @@ db      = initialize_firebase()
 FPL_API = "https://fantasy.premierleague.com/api/"
 
 # ── GW Number ကိုဒီမှာပဲ ချိန်းပါ ──────────────────────────────
-TARGET_GW = 33   # ← GW ပြောင်းတိုင်း ဒီနေရာပဲ ပြောင်းပါ
+TARGET_GW = 34   # ← GW ပြောင်းတိုင်း ဒီနေရာပဲ ပြောင်းပါ
 # ──────────────────────────────────────────────────────────────
 
 def get_live_pts_map(gw_num):
